@@ -7,9 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "dev:front": "parcel serve ./src/index.html",
+    "dev:front": "parcel serve ./client/index.html",
     "dev:api": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/dev.ts'",
-    "build:front": "parcel build ./src/index.html",
+    "build:front": "parcel build ./client/index.html",
     "build:api": "tsc",
     "build": "yarn build:front && yarn build:api",
     "start": "node ./server/index.js"
@@ -30,6 +30,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
     "ts-node": "^10.9.1"
   }
 }
