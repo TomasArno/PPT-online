@@ -1,3 +1,5 @@
+import { Router } from "@vaadin/router";
+
 customElements.define(
   "init-welcome",
   class InitWelcome extends HTMLElement {
@@ -11,12 +13,22 @@ customElements.define(
       this.render();
     }
 
+    setListeners() {
+      this.shadow
+        .querySelector(".button-container")
+        .addEventListener("click", () => {
+          Router.go("/details");
+        });
+    }
+
     addStyles() {
       const style = document.createElement("style");
       style.innerHTML = `
-      .container {
+      .main {
         width: 100%;
         height: 100vh;
+        overflow: hidden;
+
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -25,11 +37,9 @@ customElements.define(
       
       .intro-title {
         margin-top: 115px;
-
-        width: 284px;
-        height: 204px;
         
         color: #009048;
+        text-align: center;
         font-size: 80px;
         font-weight: 700;
         line-height: 70px;
@@ -71,23 +81,30 @@ customElements.define(
     }
 
     render() {
-      const paper = require("url:../../images/papel.svg");
-      const scissors = require("url:../../images/piedra.svg");
-      const rock = require("url:../../images/tijera.svg");
+      // const paper = require("url:../../images/papel.svg");
+      // const scissors = require("url:../../images/piedra.svg");
+      // const rock = require("url:../../images/tijera.svg");
+      const paper = "https://picsum.photos/200/300";
+      const scissors = "https://picsum.photos/200/300";
+      const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
-      <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-      <div class="button-container">
-        <button-comp>¡Empezar!</button-comp>
-      </div>
-      <div class="images">
-        <img class="hand-img" src="${rock}">
-        <img class="hand-img" src="${paper}">
-        <img class="hand-img" src="${scissors}">
-      </div>
+      <main class="main">
+        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
+        <div class="button-container">
+          <button-comp>¡Empezar!</button-comp>
+        </div>
+        <div class="images">
+          <img class="hand-img" src="${rock}">
+          <img class="hand-img" src="${paper}">
+          <img class="hand-img" src="${scissors}">
+        </div>
+      </main>
       `;
 
       this.addStyles();
+
+      this.setListeners();
     }
   }
 );

@@ -1,3 +1,4 @@
+import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
 customElements.define(
@@ -16,29 +17,27 @@ customElements.define(
     addStyles() {
       const style = document.createElement("style");
       style.innerHTML = `
-      .container {
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-around;
+      .main {
+          width: 100%;
+          height: 100vh;
+          
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-around;
       }
       .score {
-        background-color: white;
-        border: 10px solid #000000;
-        border-radius: 10px;
-        width: 280px;
-        height: 220px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
+          background-color: white;
+          border: 10px solid #000000;
+          border-radius: 10px;
+          width: 280px;
+          height: 220px;
       }
       .score_title {
         font-family: Odibee Sans;
         font-size: 55px;
         font-weight: 400;
-        line-height: 61px;
+        line-height: 0px;
         text-align: center;
       }
       .history-container {
@@ -76,9 +75,6 @@ customElements.define(
         .score_title {
           font-size: 60px;
         }
-        
-        
-        
         
         .history {
           margin: 0 15px 0 0;
@@ -134,25 +130,27 @@ customElements.define(
       const myHistory = currentState.history.myWins;
       const cpuHistory = currentState.history.cpuWins;
 
-      const logoTacho = require("url:../../images/tacho.svg");
-      console.log(logoTacho);
+      // const logoTacho = require("url:../../images/tacho.svg");
+      const logoTacho = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
-        <div class="img-container">
-        </div>
+        <main class="main">
+          <div class="img-container">
+          </div>
           <div class="score">
-              <h3 class="score_title">Score</h3>
-              <div class="history-container">
-                  <p class="history">Vos: ${myHistory}</p>
-                  <p class="history">Máquina: ${cpuHistory}</p>
-                  <div class="delete-container">
-                    <img class="delete-history" src="${logoTacho}"/>
-                  </div>
+            <h3 class="score_title">Score</h3>
+            <div class="history-container">
+              <p class="history">Vos: ${myHistory}</p>
+              <p class="history">Máquina: ${cpuHistory}</p>
+              <div class="delete-container">
+                <img class="delete-history" src="${logoTacho}"/>
               </div>
+            </div>
           </div>
           <div class="button-container">
             <button-comp>Volver a jugar!</button-comp>
-          </div>`;
+          </div>
+        </main>`;
 
       const imgContainer = this.shadow.querySelector(
         ".img-container"
@@ -170,9 +168,9 @@ customElements.define(
       }
       console.log(currentState.lastWinner);
 
-      // const buttonEl = this.shadow.querySelector(
-      //   ".button-container"
-      // ) as HTMLElement;
+      const buttonEl = this.shadow.querySelector(
+        ".button-container"
+      ) as HTMLElement;
 
       const deleteHistoryEl = this.shadow.querySelector(
         ".delete-history"
@@ -182,9 +180,9 @@ customElements.define(
         state.deleteHistory();
       });
 
-      // buttonEl.addEventListener("click", () => {
-      //   goTo("/details");
-      // });
+      buttonEl.addEventListener("click", () => {
+        Router.go("/details");
+      });
 
       this.addStyles();
     }

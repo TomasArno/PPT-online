@@ -1,6 +1,9 @@
+import { Router } from "@vaadin/router";
+import { state } from "../../state";
+
 customElements.define(
-  "init-play",
-  class InitPlay extends HTMLElement {
+  "init-game",
+  class InitGame extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -14,9 +17,10 @@ customElements.define(
     addStyles() {
       const style = document.createElement("style");
       style.innerHTML = `
-      .container {
+      .main {
         width: 100%;
         height: 100vh;
+        
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -62,7 +66,7 @@ customElements.define(
         position: relative;
         bottom: 40px;
       }
-      
+
       .hand-selected {
         height: 355px;
       }
@@ -106,34 +110,47 @@ customElements.define(
         max-width: 400px;
         margin: 0 auto;
       }
-      
       `;
       this.shadow.appendChild(style);
     }
 
-    render() {
-      const componentEl = document.createElement("div") as HTMLElement;
-      componentEl.className = "container";
+    setListeners() {
+      const redirectBtn = this.shadow.querySelector(
+        ".redirect-btn"
+      ) as HTMLElement;
 
-      const paper = require("url:../../images/papel.svg");
-      const scissors = require("url:../../images/tijera.svg");
-      const rock = require("url:../../images/piedra.svg");
+      redirectBtn.addEventListener("click", () => {
+        Router.go("/details");
+      });
+    }
+
+    render() {
+      // const paper = require("url:../../images/papel.svg");
+      // const scissors = require("url:../../images/tijera.svg");
+      // const rock = require("url:../../images/piedra.svg");
+      const paper = "https://picsum.photos/200/300";
+      const scissors = "https://picsum.photos/200/300";
+      const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
-        <div class="timer-container">
-          <div class="timer"></div>
-        </div>
-        <div class="my-images">
-        <img class="my-hand-img scissors" id=scissors src="${scissors}">
-        <img class="my-hand-img paper" id=paper src="${paper}">
-        <img class="my-hand-img rock" id=rock src="${rock}">
-        </div>
+        <main class="main">
+          <div class="timer-container">
+            <div class="timer"></div>
+          </div>
+          <div class="my-images">
+            <img class="my-hand-img scissors" id=scissors src="${scissors}">
+            <img class="my-hand-img paper" id=paper src="${paper}">
+            <img class="my-hand-img rock" id=rock src="${rock}">
+          </div>
+        </main>
         `;
       this.addStyles();
 
-      const imgContainer = componentEl.querySelector(".my-images") as any;
-      const timerEl = componentEl.querySelector(".timer") as HTMLElement;
+      const imgContainer = this.shadow.querySelector(".my-images") as any;
+      const timerEl = this.shadow.querySelector(".timer") as HTMLElement;
+
       let counter = 3;
+
       const intervalId = setInterval(() => {
         timerEl.textContent = counter.toString();
         counter--;
@@ -154,9 +171,9 @@ customElements.define(
       ) as HTMLElement;
       const imagesEl = imgContainer.querySelectorAll(".my-hand-img");
 
-      // const selectedImg = event.target;
-      // const urlImgSelected = selectedImg.getAttribute("src");
-      // const idImgSelected = selectedImg.getAttribute("id");
+      const selectedImg = event.target;
+      const urlImgSelected = selectedImg.getAttribute("src");
+      const idImgSelected = selectedImg.getAttribute("id");
 
       let cpuRandomNum = Math.floor(Math.random() * 3);
 
@@ -164,46 +181,39 @@ customElements.define(
       const cpUrlImg = cpuRandomImg.getAttribute("src");
       const cpuIdImg = cpuRandomImg.getAttribute("id") as any;
 
-      // state.setMove({
-      //   myMove: idImgSelected,
-      //   cpuMove: cpuIdImg,
-      // });
+      state.setMove({
+        myMove: idImgSelected,
+        cpuMove: cpuIdImg,
+      });
 
-      // this.shadow.innerHTML = `
-      // <div class="computer-image">
-      //   <img class="computer-hand-img" src="${cpUrlImg}">
-      // </div>
+      this.shadow.innerHTML = `
+        <div class="computer-image">
+          <img class="computer-hand-img" src="${cpUrlImg}">
+        </div>
 
-      // <div class="my-images">
-      //   <img class="hand-selected" src="${urlImgSelected}">
-      // </div>
-      // `;
+        <div class="my-images">
+          <img class="hand-selected" src="${urlImgSelected}">
+        </div>
+        `;
       this.addStyles();
 
-      // setTimeout(() => {
-      //   goTo("/results");
-      // }, 2500);
+      setTimeout(() => {
+        Router.go("/results");
+      }, 2500);
     }
 
     doNothing() {
       this.shadow.innerHTML = `
-      <div class="warning-container">
-        <p class="warning">¡Recordá elegir una opción antes que pasen los 3 segundos!</p>
-        
-        <div class ="btn-container">
-          <button-comp class ="redirect-btn">Volver</button-comp>
+        <div class="warning-container">
+          <p class="warning">¡Recordá elegir una opción antes que pasen los 3 segundos!</p>
+
+          <div class ="btn-container">
+            <button-comp class ="redirect-btn">Volver</button-comp>
+          </div>
         </div>
-      </div>
-      `;
+        `;
       this.addStyles();
-
-      const redirectBtn = this.shadow.querySelector(
-        ".redirect-btn"
-      ) as HTMLElement;
-
-      // redirectBtn.addEventListener("click", () => {
-      //   goTo("/details");
-      // });
+      this.setListeners();
     }
   }
 );

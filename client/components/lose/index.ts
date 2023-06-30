@@ -59,7 +59,8 @@ customElements.define(
     }
     render() {
       const componentEl = document.createElement("div");
-      const imgLose = require("url:../../images/lose.svg");
+      // const imgLose = require("url:../../images/lose.svg");
+      const imgLose = "https://picsum.photos/200/300";
 
       componentEl.innerHTML = `
         <img class="img-result" src="${imgLose}">

@@ -2,16 +2,12 @@
   "name": "ppt-online",
   "version": "1.0.0",
   "description": "Final challenge of module 6 of the APX 'FullStack Developer' course.",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "dev:front": "parcel serve ./client/index.html",
     "dev:api": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/dev.ts'",
     "build:front": "parcel build ./client/index.html",
     "build:api": "tsc",
-    "build": "yarn build:front && yarn build:api",
+    "build": "npm run build:front && npm run build:api",
     "start": "node ./server/index.js"
   },
   "keywords": [],

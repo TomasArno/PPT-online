@@ -1,14 +1,12 @@
-customElements.define(
-  "result-img-win",
-  class Result extends HTMLElement {
-    shadow: ShadowRoot;
+customElements.define("result-img-win", class Result extends HTMLElement {
+    shadow;
     constructor() {
-      super();
-      this.shadow = this.attachShadow({ mode: "open" });
+        super();
+        this.shadow = this.attachShadow({ mode: "open" });
     }
     connectedCallback() {
-      const style = document.createElement("style");
-      style.innerHTML = `
+        const style = document.createElement("style");
+        style.innerHTML = `
       .img-result {
         width: 255px;
         height: auto;
@@ -52,20 +50,16 @@ customElements.define(
         }
       }
       `;
-      this.shadow.appendChild(style);
-      this.render();
+        this.shadow.appendChild(style);
+        this.render();
     }
     render() {
-      const componentEl = document.createElement("div");
-      // const imgWin = require("url:../../images/win.svg");
-      const imgWin = "https://picsum.photos/200/300";
-
-      componentEl.innerHTML = `
+        const componentEl = document.createElement("div");
+        const imgWin = require("url:../../images/win.svg");
+        componentEl.innerHTML = `
       <img class="img-result" src="${imgWin}">
       <p class ="p-win">Ganaste!</p>
       `;
-
-      this.shadow.appendChild(componentEl);
+        this.shadow.appendChild(componentEl);
     }
-  }
-);
+});
