@@ -1,8 +1,8 @@
 import { Router } from "@vaadin/router";
 
 customElements.define(
-  "init-welcome",
-  class InitWelcome extends HTMLElement {
+  "full-room",
+  class FullRoom extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -30,18 +30,42 @@ customElements.define(
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around;
       }
       
-      .intro-title {
-        margin-top: 115px;
-        
+      .intro-title {        
         color: #009048;
         text-align: center;
         font-size: 80px;
         font-weight: 700;
         line-height: 70px;
         letter-spacing: 0em;
+      }
+
+      .info-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 30px;
+      }
+
+      .descrip-title {        
+        color: black;
+        text-align: center;
+        font-family: American Typewriter;
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 40px;
+        letter-spacing: 0px;
+      }
+
+      @media (min-width: 767px) {
+        .descrip-title {
+          width: 600px;
+          height: 320px;
+          font-size: 60px;
+          line-height: 60px;
+        }
       }
       
       .button-container {
@@ -51,10 +75,12 @@ customElements.define(
         row-gap: 13px;
       }
       
+      .images {
+        position: relative;
+        top: 101px;
+      }
       .hand-img {
         height: 170px;
-        position: relative;
-        top: 40px;
       }
 
       @media (min-width: 767px) {
@@ -92,9 +118,11 @@ customElements.define(
       this.shadow.innerHTML = `
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="button-container">
-          <button-comp class="new-game">Nuevo Juego</button-comp>
-          <button-comp class="join-game">Ingresar a una sala</button-comp>
+        <div class="info-container">
+          <h3 class="descrip-title">Ups, esta sala está completa y tu nombre no coincide con nadie en la sala..</h3>
+          <div class="button-container">
+          <button-comp class="new-game">Volver</button-comp>
+          </div>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -110,12 +138,12 @@ customElements.define(
     }
 
     setListeners() {
-      this.shadow.querySelector(".new-game").addEventListener("click", () => {
-        Router.go("/new-game");
-      });
-      this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/join-game");
-      });
+      // this.shadow.querySelector(".new-game").addEventListener("click", () => {
+      //   Router.go("/new-game");
+      // });
+      // this.shadow.querySelector(".join-game").addEventListener("click", () => {
+      //   Router.go("/join-game");
+      // });
     }
   }
 );

@@ -1,8 +1,8 @@
 import { Router } from "@vaadin/router";
 
 customElements.define(
-  "init-details",
-  class InitDetails extends HTMLElement {
+  "wait-room",
+  class WaitRoom extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -19,7 +19,7 @@ customElements.define(
       ) as HTMLElement;
 
       buttonContainerEl.addEventListener("click", () => {
-        Router.go("/wait-room");
+        Router.go("/game");
       });
     }
 
@@ -123,7 +123,7 @@ customElements.define(
             </div>
           </div>
 
-          <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
+          <h3 class="descrip-title">Esperando a que <br><span class="player-name">Paula</span> presione<br> ¡Jugar!...</h3>
           <div class="button-container">
             <button-comp>¡Jugar!</button-comp>
           </div>

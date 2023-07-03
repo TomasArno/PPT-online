@@ -1,8 +1,8 @@
 import { Router } from "@vaadin/router";
 
 customElements.define(
-  "init-welcome",
-  class InitWelcome extends HTMLElement {
+  "share-room",
+  class ShareRoom extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -26,22 +26,33 @@ customElements.define(
         width: 100%;
         height: 100vh;
         overflow: hidden;
-
+        
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
       }
       
-      .intro-title {
-        margin-top: 115px;
-        
-        color: #009048;
+      .data-container {
+        width: 70%;
+        padding: 30px 0;
+        display:flex;
+        justify-content: space-between;
+        font-size: 20px;
+      }
+      .data-container div {
+        display:flex;
+        flex-direction: column;
+        text-align: right;
+      }
+      
+      .code-container {
+        color: black;
         text-align: center;
-        font-size: 80px;
-        font-weight: 700;
-        line-height: 70px;
-        letter-spacing: 0em;
+        font-family: American Typewriter;
+        font-size: 40px;
+        line-height: 60px;
+        letter-spacing: 0px;
       }
       
       .button-container {
@@ -91,10 +102,18 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="button-container">
-          <button-comp class="new-game">Nuevo Juego</button-comp>
-          <button-comp class="join-game">Ingresar a una sala</button-comp>
+        <div class="data-container">
+          <div class="player-info-container">
+            <p>Player 1: 0</p>
+            <p>Player 2: 0</p>
+          </div>
+          <div class="room-info-container">
+            <p>Sala</p>
+            <p>123456</p>
+          </div>
+        </div>
+        <div class="code-container">
+          <h3 class="descrip-title">Compartí el código <br> <span class="room-code">123456</span> <br> con tu rival.</h3>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -110,12 +129,12 @@ customElements.define(
     }
 
     setListeners() {
-      this.shadow.querySelector(".new-game").addEventListener("click", () => {
-        Router.go("/new-game");
-      });
-      this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/join-game");
-      });
+      // this.shadow.querySelector(".new-game").addEventListener("click", () => {
+      //   Router.go("/new-game");
+      // });
+      // this.shadow.querySelector(".join-game").addEventListener("click", () => {
+      //   Router.go("/join-game");
+      // });
     }
   }
 );
