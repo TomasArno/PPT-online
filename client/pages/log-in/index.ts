@@ -1,8 +1,9 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
-  "new-game",
-  class NewGame extends HTMLElement {
+  "init-login",
+  class InitLogIn extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -44,8 +45,15 @@ customElements.define(
         letter-spacing: 0em;
       }
       
-      .button-container {
+      .form-container {
         width: 320px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 13px;
+      }
+
+      .form {
+        width: 100%;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
@@ -72,11 +80,34 @@ customElements.define(
         line-height: 90px;
         }
 
-        .button-container {
+        .comps-container {
           width: 400px;
 
         }
       }
+
+      .input {
+        background-color: white;
+        border: 10px solid #001997;
+        border-radius: 10px;
+        
+        width: 100%;
+        height: 72px;
+
+        color: black;
+        font-family: Odibee Sans;
+        font-size: 45px;
+        font-weight: 400;
+        line-height: 50px;
+        letter-spacing: 0.05em;
+        text-align: center;
+      }
+      
+      .input::placeholder {
+        color: #006CFC;
+        font-size: 35px;
+      }
+
   `;
       this.shadow.appendChild(style);
     }
@@ -92,8 +123,11 @@ customElements.define(
       this.shadow.innerHTML = `
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="button-container">
-          <button-comp add="input" type="new" class="new-room">¡Empezar!</button-comp>
+        <div class="form-container">
+          <form class="form">
+            <input placeholder="Tu email" type="email" class="email input" />
+            <button-comp class="button">Log In</button-comp>
+          </form>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -109,8 +143,26 @@ customElements.define(
     }
 
     setListeners() {
-      this.shadow.querySelector(".new-room").addEventListener("click", () => {
-        Router.go("/wait-room");
+      const inputEmailEl = this.shadow.querySelector(
+        ".email"
+      ) as HTMLFormElement;
+
+      this.shadow.querySelector(".button").addEventListener("click", () => {
+        state.auth(inputEmailEl.value).then(() => {
+          const cs = state.getState();
+          if (
+            cs.userData.userId &&
+            cs.userData.userEmail &&
+            cs.userData.userName
+          ) {
+            console.log(
+              `your userID is ${cs.userData.userId},
+              your userName is ${cs.userData.userName},
+              your userEmail is ${cs.userData.userEmail}`
+            );
+            Router.go("/welcome");
+          }
+        });
       });
     }
   }

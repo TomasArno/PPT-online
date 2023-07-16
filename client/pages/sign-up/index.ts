@@ -2,8 +2,8 @@ import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
 customElements.define(
-  "init-welcome",
-  class InitWelcome extends HTMLElement {
+  "init-signup",
+  class InitSignUp extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -45,8 +45,15 @@ customElements.define(
         letter-spacing: 0em;
       }
       
-      .button-container {
+      .form-container {
         width: 320px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 13px;
+      }
+
+      .form {
+        width: 100%;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
@@ -73,11 +80,34 @@ customElements.define(
         line-height: 90px;
         }
 
-        .button-container {
+        .comps-container {
           width: 400px;
 
         }
       }
+
+      .input {
+        background-color: white;
+        border: 10px solid #001997;
+        border-radius: 10px;
+        
+        width: 100%;
+        height: 72px;
+
+        color: black;
+        font-family: Odibee Sans;
+        font-size: 45px;
+        font-weight: 400;
+        line-height: 50px;
+        letter-spacing: 0.05em;
+        text-align: center;
+      }
+      
+      .input::placeholder {
+        color: #006CFC;
+        font-size: 35px;
+      }
+
   `;
       this.shadow.appendChild(style);
     }
@@ -93,9 +123,12 @@ customElements.define(
       this.shadow.innerHTML = `
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="button-container">
-          <button-comp class="new-game">Nuevo Juego</button-comp>
-          <button-comp class="join-game">Ingresar a una sala</button-comp>
+        <div class="form-container">
+          <form class="form">
+            <input placeholder="Tu email" type="email" class="email input" />
+            <input placeholder="Tu nombre" type="text" class="name input" />
+            <button-comp class="button">Sign Up</button-comp>
+          </form>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -111,13 +144,28 @@ customElements.define(
     }
 
     setListeners() {
-      this.shadow.querySelector(".new-game").addEventListener("click", () => {
-        state.createRoom().then(() => {
-          Router.go("/share-room");
+      const inputEmailEl = this.shadow.querySelector(
+        ".email"
+      ) as HTMLFormElement;
+      const inputNameEl = this.shadow.querySelector(".name") as HTMLFormElement;
+
+      this.shadow.querySelector(".button").addEventListener("click", () => {
+        state.setCredentials({
+          userName: inputNameEl.value,
+          userEmail: inputEmailEl.value,
         });
-      });
-      this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/join-game");
+
+        const ls = state.getState();
+
+        if (ls.userData.userName && ls.userData.userEmail) {
+          state.signUp(ls.userData.userEmail, ls.userData.userName).then(() => {
+            const cs = state.getState();
+            if (cs.userData.userId) {
+              console.log(`your userID is ${cs.userData.userId}`);
+              Router.go("/welcome");
+            }
+          });
+        }
       });
     }
   }

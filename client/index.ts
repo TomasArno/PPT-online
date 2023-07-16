@@ -1,8 +1,10 @@
 import { Router } from "@vaadin/router";
 import { state } from "./state";
 import "./router";
+import "./pages/auth";
+import "./pages/sign-up";
+import "./pages/log-in";
 import "./pages/welcome";
-import "./pages/new-game";
 import "./pages/join-game";
 import "./pages/full-room";
 import "./pages/share-room";
@@ -15,6 +17,6 @@ import "./components/win";
 import "./components/lose";
 
 (function init() {
-  state.syncroWithLocalStorage();
+  // state.syncroWithLocalStorage();
   Router.go("/");
 })();

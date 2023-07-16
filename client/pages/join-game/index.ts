@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "join-game",
@@ -44,11 +45,33 @@ customElements.define(
         letter-spacing: 0em;
       }
       
-      .button-container {
+      .comp-container {
         width: 320px;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
+      }
+
+      .input {
+        background-color: white;
+        border: 10px solid #001997;
+        border-radius: 10px;
+        
+        width: 100%;
+        height: 72px;
+
+        color: black;
+        font-family: Odibee Sans;
+        font-size: 45px;
+        font-weight: 400;
+        line-height: 50px;
+        letter-spacing: 0.05em;
+        text-align: center;
+      }
+      
+      .input::placeholder {
+        color: #006CFC;
+        font-size: 35px;
       }
       
       .hand-img {
@@ -72,7 +95,7 @@ customElements.define(
         line-height: 90px;
         }
 
-        .button-container {
+        .comp-container {
           width: 400px;
 
         }
@@ -92,8 +115,9 @@ customElements.define(
       this.shadow.innerHTML = `
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="button-container">
-          <button-comp add="input" type="join" class="join-game">Ingresar a la sala</button-comp>
+        <div class="comp-container">
+          <input placeholder="Room ID" class="input" />
+          <button-comp class="join-game">Ingresar a la sala</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -109,8 +133,12 @@ customElements.define(
     }
 
     setListeners() {
+      const inputEl = this.shadow.querySelector(".input") as HTMLFormElement;
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/details");
+        state.joinRoom(inputEl.value).then((res) => {
+          console.log("me voy al details");
+          if (res) Router.go("/details");
+        });
       });
     }
   }

@@ -1,9 +1,8 @@
 import { Router } from "@vaadin/router";
-import { state } from "../../state";
 
 customElements.define(
-  "init-welcome",
-  class InitWelcome extends HTMLElement {
+  "init-auth",
+  class InitAuth extends HTMLElement {
     shadow = this.attachShadow({ mode: "open" });
 
     constructor() {
@@ -94,8 +93,8 @@ customElements.define(
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
         <div class="button-container">
-          <button-comp class="new-game">Nuevo Juego</button-comp>
-          <button-comp class="join-game">Ingresar a una sala</button-comp>
+          <button-comp class="sign-up">Sign Up</button-comp>
+          <button-comp class="log-in">Log In</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -111,13 +110,11 @@ customElements.define(
     }
 
     setListeners() {
-      this.shadow.querySelector(".new-game").addEventListener("click", () => {
-        state.createRoom().then(() => {
-          Router.go("/share-room");
-        });
+      this.shadow.querySelector(".sign-up").addEventListener("click", () => {
+        Router.go("/sign-up");
       });
-      this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/join-game");
+      this.shadow.querySelector(".log-in").addEventListener("click", () => {
+        Router.go("/log-in");
       });
     }
   }

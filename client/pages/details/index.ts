@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "init-details",
@@ -11,16 +12,6 @@ customElements.define(
 
     connectedCallback() {
       this.render();
-    }
-
-    setListeners() {
-      const buttonContainerEl = this.shadow.querySelector(
-        ".button-container"
-      ) as HTMLElement;
-
-      buttonContainerEl.addEventListener("click", () => {
-        Router.go("/wait-room");
-      });
     }
 
     addStyles() {
@@ -110,16 +101,20 @@ customElements.define(
       const scissors = "https://picsum.photos/200/300";
       const rock = "https://picsum.photos/200/300";
 
-      this.shadow.innerHTML = `
+      state.subscribe(() => {
+        const cs = state.getState();
+        const rivalUserName = state.getOpponentData().userName;
+
+        this.shadow.innerHTML = `
         <main class="main">
           <div class="data-container">
             <div class="player-info-container">
-              <p>Player 1: 0</p>
-              <p>Player 2: 0</p>
+              <p>${cs.userData.userName}: 0</p>
+              <p>${rivalUserName}: 0</p>
             </div>
             <div class="room-info-container">
               <p>Sala</p>
-              <p>123456</p>
+              <p>${cs.userData.userShortRoomId}</p>
             </div>
           </div>
 
@@ -135,8 +130,19 @@ customElements.define(
         </main>
       `;
 
-      this.addStyles();
-      this.setListeners();
+        this.addStyles();
+        this.setListeners();
+      });
+    }
+    setListeners() {
+      const buttonContainerEl = this.shadow.querySelector(
+        ".button-container"
+      ) as HTMLElement;
+
+      buttonContainerEl.addEventListener("click", () => {
+        // Router.go("/wait-room");
+        state.deletePlayer();
+      });
     }
   }
 );

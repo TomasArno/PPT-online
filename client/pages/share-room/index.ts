@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "share-room",
@@ -40,6 +41,7 @@ customElements.define(
         justify-content: space-between;
         font-size: 20px;
       }
+
       .data-container div {
         display:flex;
         flex-direction: column;
@@ -100,41 +102,47 @@ customElements.define(
       // const scissors = "https://picsum.photos/200/300";
       // const rock = "https://picsum.photos/200/300";
 
-      this.shadow.innerHTML = `
-      <main class="main">
+      state.subscribe(() => {
+        const cs = state.getState();
+
+        this.shadow.innerHTML = `
+        <main class="main">
         <div class="data-container">
           <div class="player-info-container">
-            <p>Player 1: 0</p>
-            <p>Player 2: 0</p>
+          
+            <p>${cs.userData.userName}: 0</p>
+            <p>${state.getOpponentData().userName || "Player 2"}: 0</p>
+          
           </div>
           <div class="room-info-container">
             <p>Sala</p>
-            <p>123456</p>
-          </div>
-        </div>
-        <div class="code-container">
-          <h3 class="descrip-title">Compartí el código <br> <span class="room-code">123456</span> <br> con tu rival.</h3>
+            <p>${cs.userData.userShortRoomId}</p>
+            </div>
+            </div>
+            <div class="code-container">
+            <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${
+              cs.userData.userShortRoomId
+            }</span> <br> con tu rival.</h3>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
           <img class="hand-img" src="${paper}">
           <img class="hand-img" src="${scissors}">
-        </div>
-      </main>
-      `;
-
-      this.addStyles();
-
-      this.setListeners();
+          </div>
+          </main>
+          `;
+        this.addStyles();
+        this.setListeners();
+      });
     }
 
     setListeners() {
-      // this.shadow.querySelector(".new-game").addEventListener("click", () => {
-      //   Router.go("/new-game");
-      // });
-      // this.shadow.querySelector(".join-game").addEventListener("click", () => {
-      //   Router.go("/join-game");
-      // });
+      if (state.getOpponentData().online) {
+        console.log("pasé");
+        Router.go("/details"); // no se ejecuta el state luego de cargar la pagina y no se ve. Hacer pags que tienen la misma estructura (navbar arriba, etc) en una sola
+      } else {
+        console.log("no pasé", state.getOpponentData());
+      }
     }
   }
 );
