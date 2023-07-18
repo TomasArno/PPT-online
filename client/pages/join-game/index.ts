@@ -137,7 +137,7 @@ customElements.define(
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
         state.joinRoom(inputEl.value).then((res) => {
           console.log("me voy al details");
-          if (res) Router.go("/details");
+          if (res) Router.go("/share-room");
         });
       });
     }

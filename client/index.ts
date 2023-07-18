@@ -8,8 +8,6 @@ import "./pages/welcome";
 import "./pages/join-game";
 import "./pages/full-room";
 import "./pages/share-room";
-import "./pages/details";
-import "./pages/wait-room";
 import "./pages/play";
 import "./pages/results";
 import "./components/button";

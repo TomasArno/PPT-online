@@ -1,38 +1,12 @@
 import { rtDb, fsDb } from "./db";
-
-type Move = "rock" | "paper" | "scissors";
-
-type Game = {
-  myMove: Move;
-  cpuMove: Move;
-};
-
-type History = {
-  myWins: number;
-  cpuWins: number;
-  draws: number;
-};
-
-type Credentials = {
-  userName: string;
-  userEmail: string;
-};
-
-type UserData = {
-  userId: string;
-  userName: string;
-  userEmail: string;
-  userShortRoomId: string;
-  userLongRoomId: string;
-};
-
-type State = {
-  userData: UserData;
-  rtDbData: {};
-  currentMoves: Game;
-  history: History;
-  lastWinner: string;
-};
+import {
+  State,
+  Game,
+  HistoryGame,
+  Credentials,
+  UserData,
+  rtDbPlayerData,
+} from "./interfaces";
 
 const API_BASE_URL = process.env.API_URL;
 
@@ -42,15 +16,15 @@ export const state = {
       userId: "",
       userName: "",
       userEmail: "",
-      userShortRoomId: "",
-      userLongRoomId: "",
+      shortRoomId: "",
+      longRoomId: "",
     },
     rtDbData: {},
     currentMoves: {
       myMove: "",
       cpuMove: "",
     },
-    history: {
+    historyGame: {
       myWins: 0,
       cpuWins: 0,
       draws: 0,
@@ -67,12 +41,18 @@ export const state = {
   //   }
   // },
 
-  getOpponentData() {
+  getPlayersData(number: 1 | 2) {
     const cs: State = this.getState();
 
     for (let prop in cs.rtDbData) {
-      if (prop != cs.userData.userId) {
-        return cs.rtDbData[prop];
+      if (number == 1) {
+        if (prop == cs.userData.userId) {
+          return cs.rtDbData[prop];
+        }
+      } else {
+        if (prop != cs.userData.userId) {
+          return cs.rtDbData[prop];
+        }
       }
     }
     return false;
@@ -101,12 +81,14 @@ export const state = {
     console.log("me conecto al chatroom");
 
     const chatRoomsRef = rtDb.ref(
-      `/rooms/${lastState.userData.userLongRoomId}/currentGame`
+      `/rooms/${lastState.userData.longRoomId}/currentGame`
     );
 
     chatRoomsRef.on("value", (snapshot) => {
       let data = snapshot.val();
       console.log("CAMBIOS", data);
+
+      // state.deletePlayer(); probar si puede ir aca
 
       lastState.rtDbData = data;
 
@@ -197,7 +179,7 @@ export const state = {
     if (userRoomIdRes.status != 401) {
       const { roomSimpleId } = await userRoomIdRes.json();
 
-      cs.userData.userShortRoomId = roomSimpleId;
+      cs.userData.shortRoomId = roomSimpleId;
       state.setState(cs);
     } else {
       const { err } = await userRoomIdRes.json();
@@ -205,7 +187,7 @@ export const state = {
     }
 
     const ls: State = this.getState();
-    await this.joinRoom(ls.userData.userShortRoomId);
+    await this.joinRoom(ls.userData.shortRoomId);
   },
 
   async joinRoom(roomId) {
@@ -222,8 +204,8 @@ export const state = {
     if (userRoomIdRes.status != 401) {
       const { rtDbRoomId } = await userRoomIdRes.json();
 
-      cs.userData.userLongRoomId = rtDbRoomId;
-      cs.userData.userShortRoomId = roomId;
+      cs.userData.longRoomId = rtDbRoomId;
+      cs.userData.shortRoomId = roomId;
       state.setState(cs);
 
       this.connectChatroom();
@@ -236,10 +218,28 @@ export const state = {
       return false;
     }
   },
+  async setPlayerStateDb(properties: rtDbPlayerData) {
+    const cs: State = this.getState();
+    const userStateRes = await fetch(
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
+      {
+        method: "post",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          choice: properties.choice,
+          start: properties.start,
+        }),
+      }
+    );
+
+    console.log(await userStateRes.json());
+  },
   async deletePlayer() {
     const cs: State = this.getState();
     const userDeletedRes = await fetch(
-      `${API_BASE_URL}/rooms/${cs.userData.userShortRoomId}/${cs.userData.userId}`,
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
       {
         method: "delete",
         headers: {
@@ -255,7 +255,7 @@ export const state = {
     const lastState: State = this.getState();
     this.setState({
       ...lastState,
-      history: { myWins: 0, cpuWins: 0, draws: 0 },
+      historyGame: { myWins: 0, cpuWins: 0, draws: 0 },
     });
   },
 

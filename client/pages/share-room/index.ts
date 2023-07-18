@@ -1,5 +1,12 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import {
+  State,
+  Game,
+  HistoryGame,
+  Credentials,
+  UserData,
+} from "../../interfaces";
 
 customElements.define(
   "share-room",
@@ -48,20 +55,13 @@ customElements.define(
         text-align: right;
       }
       
-      .code-container {
+      .dinamic-container {
         color: black;
         text-align: center;
         font-family: American Typewriter;
         font-size: 40px;
         line-height: 60px;
         letter-spacing: 0px;
-      }
-      
-      .button-container {
-        width: 320px;
-        display: flex;
-        flex-direction: column;
-        row-gap: 13px;
       }
       
       .hand-img {
@@ -90,6 +90,27 @@ customElements.define(
 
         }
       }
+
+
+      @media (min-width: 767px) {
+        .dinamic-title {
+          width: 600px;
+          height: 320px;
+          font-size: 60px;
+          line-height: 60px;
+        }
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      @media (min-width: 767px) {
+        .button-container {
+          width: 400px;
+        }
+      }
   `;
       this.shadow.appendChild(style);
     }
@@ -103,45 +124,63 @@ customElements.define(
       // const rock = "https://picsum.photos/200/300";
 
       state.subscribe(() => {
-        const cs = state.getState();
+        const cs: State = state.getState();
+        const myData = state.getPlayersData(1);
+        const opponentData = state.getPlayersData(2);
 
         this.shadow.innerHTML = `
         <main class="main">
-        <div class="data-container">
-          <div class="player-info-container">
-          
-            <p>${cs.userData.userName}: 0</p>
-            <p>${state.getOpponentData().userName || "Player 2"}: 0</p>
-          
-          </div>
-          <div class="room-info-container">
-            <p>Sala</p>
-            <p>${cs.userData.userShortRoomId}</p>
+          <div class="data-container">
+            <div class="player-info-container">
+              <p>${cs.userData.userName}: 0</p>
+              <p>${opponentData.userName || "Player 2"}: 0</p>
             </div>
+            <div class="room-info-container">
+                <p>Sala</p>
+                <p>${cs.userData.shortRoomId}</p>
             </div>
-            <div class="code-container">
-            <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${
-              cs.userData.userShortRoomId
-            }</span> <br> con tu rival.</h3>
-        </div>
-        <div class="images">
-          <img class="hand-img" src="${rock}">
-          <img class="hand-img" src="${paper}">
-          <img class="hand-img" src="${scissors}">
           </div>
-          </main>
-          `;
+          <div class="dinamic-container"></div>
+          <div class="images">
+            <img class="hand-img" src="${rock}">
+            <img class="hand-img" src="${paper}">
+            <img class="hand-img" src="${scissors}">
+          </div>
+        </main>`;
+
+        const dinamicContainerEl = this.shadow.querySelector(
+          ".dinamic-container"
+        ) as HTMLElement;
+
+        if (!opponentData) {
+          dinamicContainerEl.innerHTML = `
+          <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${cs.userData.shortRoomId}</span> <br> con tu rival.</h3>`;
+        } else if (opponentData.online && !myData.start) {
+          dinamicContainerEl.innerHTML = `
+            <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
+            <div class="button-container"><button-comp>¡Jugar!</button-comp></div>`;
+        } else if (opponentData.online && !opponentData.start) {
+          console.log("pasé");
+          dinamicContainerEl.innerHTML = `
+              <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
+        } else if (myData.start && opponentData.start) {
+          Router.go("/game");
+        }
+
         this.addStyles();
-        this.setListeners();
+        this.setListeners(myData, opponentData);
       });
     }
 
-    setListeners() {
-      if (state.getOpponentData().online) {
-        console.log("pasé");
-        Router.go("/details"); // no se ejecuta el state luego de cargar la pagina y no se ve. Hacer pags que tienen la misma estructura (navbar arriba, etc) en una sola
-      } else {
-        console.log("no pasé", state.getOpponentData());
+    setListeners(myData, opponentData) {
+      if (opponentData.online && !myData.start) {
+        const buttonPlayEl = this.shadow.querySelector(
+          ".button-container"
+        ) as HTMLFormElement;
+
+        buttonPlayEl.addEventListener("click", () => {
+          state.setPlayerStateDb({ start: true, choice: "" });
+        });
       }
     }
   }

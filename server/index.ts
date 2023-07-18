@@ -175,6 +175,49 @@ app.delete("/rooms/:roomId/:userId", (req, res) => {
     });
 });
 
+app.post("/rooms/:roomId/:userId", (req, res) => {
+  const { roomId } = req.params;
+  const { userId } = req.params;
+  const { choice } = req.body;
+  const { start } = req.body;
+  console.log("entre a patch");
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const userRef = rtDb.ref(
+                `rooms/${rtDbRoomId}/currentGame/${userId}`
+              );
+              userRef
+                .update({ choice: choice, start: start })
+                .then(() => {
+                  res.json({ msg: "update succeeded." });
+                })
+                .catch(() => {
+                  res.json({ msg: "update failed." });
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
+      }
+    });
+});
+
+console.log("me pase de patch");
+
 app.use(express.static("dist"));
 
 app.get("*", (req, res) => {
