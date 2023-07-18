@@ -44,22 +44,31 @@ customElements.define(
         text-align: center;
       }
 
-      .my-images {
-        position: relative;
-        top: 50px;
-      }
-
       .my-hand-img {
         height: 235px;
       }
 
       @media (min-width: 767px) {
-        .hand-img {
+        .my-hand-img {
           height: 250px;
         }
       }
 
-      .computer-hand-img {
+      .my-images {
+        position: relative;
+        top: 50px;
+      }
+
+      .my-images, .opponent-image {
+        display: flex;
+        justify-content: center;
+      }
+      
+      .hand-selected {
+        height: 355px;
+      }
+      
+      .opponent-hand-img {
         height: 355px;
         transform: rotate(180deg);
 
@@ -67,9 +76,6 @@ customElements.define(
         bottom: 40px;
       }
 
-      .hand-selected {
-        height: 355px;
-      }
 
       .warning-container {
         margin: auto;
@@ -120,17 +126,17 @@ customElements.define(
       ) as HTMLElement;
 
       redirectBtn.addEventListener("click", () => {
-        Router.go("/details");
+        Router.go("/share-room");
       });
     }
 
     render() {
-      // const paper = require("url:../../images/papel.svg");
-      // const scissors = require("url:../../images/tijera.svg");
-      // const rock = require("url:../../images/piedra.svg");
-      const paper = "https://picsum.photos/200/300";
-      const scissors = "https://picsum.photos/200/300";
-      const rock = "https://picsum.photos/200/300";
+      const paper = require("url:../../images/papel.svg");
+      const scissors = require("url:../../images/tijera.svg");
+      const rock = require("url:../../images/piedra.svg");
+      // const paper = "https://picsum.photos/200/300";
+      // const scissors = "https://picsum.photos/200/300";
+      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -156,16 +162,16 @@ customElements.define(
         counter--;
         if (counter < 0) {
           clearInterval(intervalId);
-          this.doNothing();
+          // this.doNothing();
         }
       }, 1000);
 
       imgContainer.addEventListener("click", (e: any) => {
         clearInterval(intervalId);
-        this.callbacks(e);
+        this.setMovements(e);
       });
     }
-    callbacks(event) {
+    setMovements(event) {
       const imgContainer = this.shadow.querySelector(
         ".my-images"
       ) as HTMLElement;
@@ -175,30 +181,54 @@ customElements.define(
       const urlImgSelected = selectedImg.getAttribute("src");
       const idImgSelected = selectedImg.getAttribute("id");
 
-      let cpuRandomNum = Math.floor(Math.random() * 3);
-
-      const cpuRandomImg = imagesEl[cpuRandomNum];
-      const cpUrlImg = cpuRandomImg.getAttribute("src");
-      const cpuIdImg = cpuRandomImg.getAttribute("id") as any;
-
       state.setMove({
-        myMove: idImgSelected,
-        cpuMove: cpuIdImg,
+        choice: idImgSelected,
       });
 
-      this.shadow.innerHTML = `
-        <div class="computer-image">
-          <img class="computer-hand-img" src="${cpUrlImg}">
-        </div>
+      state.subscribe(() => {
+        const cs = state.getState();
 
-        <div class="my-images">
-          <img class="hand-selected" src="${urlImgSelected}">
-        </div>
+        const myData = state.getPlayersData(1);
+        const opponentData = state.getPlayersData(2);
+
+        if (
+          myData.choice &&
+          opponentData.choice &&
+          cs.lastWinner &&
+          cs.rtDbData.history
+        ) {
+          Router.go("/results");
+        }
+
+        const opponentChoice = state.getPlayersData(2).choice;
+        if (opponentChoice) {
+          let opponentImgSelected;
+
+          for (const img of imagesEl) {
+            if (img.getAttribute("id") == opponentChoice) {
+              opponentImgSelected = img;
+            }
+          }
+          var opponentUrlImg = opponentImgSelected.getAttribute("src");
+        }
+
+        this.shadow.innerHTML = `
+        <main class="main">
+          <div class="opponent-image">
+            <img class="opponent-hand-img" src="${opponentUrlImg || ""}">
+          </div>
+          
+          <div class="my-images">
+            <img class="hand-selected" src="${urlImgSelected}">
+          </div>
+        </main>
         `;
-      this.addStyles();
+        this.addStyles();
+      });
 
       setTimeout(() => {
-        Router.go("/results");
+        console.log("me voy a results");
+        state.setWinner();
       }, 2500);
     }
 

@@ -5,12 +5,6 @@ export interface Game {
   cpuMove: Move;
 }
 
-export interface HistoryGame {
-  myWins: number;
-  cpuWins: number;
-  draws: number;
-}
-
 export interface Credentials {
   userName: string;
   userEmail: string;
@@ -33,6 +27,5 @@ export interface State {
   userData: UserData;
   rtDbData: {};
   currentMoves: Game;
-  history: HistoryGame;
-  lastWinner: string;
+  lastWinner: "";
 }

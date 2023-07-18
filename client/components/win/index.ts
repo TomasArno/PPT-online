@@ -57,8 +57,8 @@ customElements.define(
     }
     render() {
       const componentEl = document.createElement("div");
-      // const imgWin = require("url:../../images/win.svg");
-      const imgWin = "https://picsum.photos/200/300";
+      const imgWin = require("url:../../images/win.svg");
+      // const imgWin = "https://picsum.photos/200/300";
 
       componentEl.innerHTML = `
       <img class="img-result" src="${imgWin}">

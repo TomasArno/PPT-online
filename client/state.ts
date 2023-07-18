@@ -1,12 +1,5 @@
 import { rtDb, fsDb } from "./db";
-import {
-  State,
-  Game,
-  HistoryGame,
-  Credentials,
-  UserData,
-  rtDbPlayerData,
-} from "./interfaces";
+import { State, Credentials } from "./interfaces";
 
 const API_BASE_URL = process.env.API_URL;
 
@@ -24,11 +17,6 @@ export const state = {
       myMove: "",
       cpuMove: "",
     },
-    historyGame: {
-      myWins: 0,
-      cpuWins: 0,
-      draws: 0,
-    },
     lastWinner: "",
   },
   listeners: [],
@@ -40,23 +28,6 @@ export const state = {
   //     this.setState(JSON.parse(localData as any));
   //   }
   // },
-
-  getPlayersData(number: 1 | 2) {
-    const cs: State = this.getState();
-
-    for (let prop in cs.rtDbData) {
-      if (number == 1) {
-        if (prop == cs.userData.userId) {
-          return cs.rtDbData[prop];
-        }
-      } else {
-        if (prop != cs.userData.userId) {
-          return cs.rtDbData[prop];
-        }
-      }
-    }
-    return false;
-  },
 
   subscribe(callBack: () => any) {
     this.listeners.push(callBack);
@@ -80,15 +51,11 @@ export const state = {
     const lastState: State = this.getState();
     console.log("me conecto al chatroom");
 
-    const chatRoomsRef = rtDb.ref(
-      `/rooms/${lastState.userData.longRoomId}/currentGame`
-    );
+    const chatRoomsRef = rtDb.ref(`/rooms/${lastState.userData.longRoomId}`);
 
     chatRoomsRef.on("value", (snapshot) => {
       let data = snapshot.val();
       console.log("CAMBIOS", data);
-
-      // state.deletePlayer(); probar si puede ir aca
 
       lastState.rtDbData = data;
 
@@ -103,10 +70,6 @@ export const state = {
     cs.userData.userEmail = credentials.userEmail;
 
     this.setState(cs);
-  },
-
-  checkStatus() {
-    //Incorporar
   },
 
   async auth(userEmail) {
@@ -139,6 +102,7 @@ export const state = {
       console.error(err);
     }
   },
+
   async signUp(userEmail: string, userName: string) {
     const cs: State = this.getState();
 
@@ -218,24 +182,78 @@ export const state = {
       return false;
     }
   },
-  async setPlayerStateDb(properties: rtDbPlayerData) {
+
+  async setPlayerStateDb(properties: {}) {
     const cs: State = this.getState();
     const userStateRes = await fetch(
       `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
       {
-        method: "post",
+        method: "PATCH",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({
-          choice: properties.choice,
-          start: properties.start,
-        }),
+        body: JSON.stringify(properties),
       }
     );
 
     console.log(await userStateRes.json());
   },
+
+  async setHistoryDb(properties: {}) {
+    const cs: State = this.getState();
+
+    cs.lastWinner = properties["lastWinner"];
+    this.setState(cs);
+
+    const userStateRes = await fetch(
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/history?userId=${cs.userData.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(properties),
+      }
+    );
+
+    console.log(await userStateRes.json());
+  },
+
+  async setWinner() {
+    const cs: State = this.getState();
+
+    let history = cs.rtDbData["history"];
+
+    const myData = this.getPlayersData(1);
+    const opponentData = this.getPlayersData(2);
+    const myMove = myData.choice;
+    const opponentMove = opponentData.choice;
+
+    if (!history) {
+      history = {
+        [myData.userName]: 0,
+        [opponentData.userName]: 0,
+        ["draws"]: 0,
+      };
+    }
+
+    if (
+      (myMove == "rock" && opponentMove == "scissors") ||
+      (myMove == "paper" && opponentMove == "rock") ||
+      (myMove == "scissors" && opponentMove == "paper")
+    ) {
+      history[myData.userName] += 1;
+      history.lastWinner = myData.userName;
+    } else if (myMove == opponentMove) {
+      history["draws"] += 1;
+      history.lastWinner = "draw";
+    } else {
+      history[opponentData.userName] += 1;
+      history.lastWinner = opponentData.userName;
+    }
+    await this.setHistoryDb(history);
+  },
+
   async deletePlayer() {
     const cs: State = this.getState();
     const userDeletedRes = await fetch(
@@ -251,41 +269,36 @@ export const state = {
     console.log(await userDeletedRes.json());
   },
 
+  getPlayersData(number: 1 | 2) {
+    const cs: State = this.getState();
+
+    for (let prop in cs.rtDbData["currentGame"]) {
+      if (number == 1) {
+        if (prop == cs.userData.userId) {
+          return cs.rtDbData["currentGame"][prop];
+        }
+      } else {
+        if (prop != cs.userData.userId) {
+          return cs.rtDbData["currentGame"][prop];
+        }
+      }
+    }
+    return false;
+  },
+
+  checkStatus() {
+    //Incorporar
+  },
+
+  setMove(moves) {
+    this.setPlayerStateDb(moves);
+  },
+
   deleteHistory() {
     const lastState: State = this.getState();
     this.setState({
       ...lastState,
       historyGame: { myWins: 0, cpuWins: 0, draws: 0 },
     });
-  },
-
-  getWinner(currentState: State) {
-    const myMove = currentState.currentMoves.myMove;
-    const cpuMove = currentState.currentMoves.cpuMove;
-    console.log(myMove, cpuMove);
-
-    if (
-      (myMove == "rock" && cpuMove == "scissors") ||
-      (myMove == "paper" && cpuMove == "rock") ||
-      (myMove == "scissors" && cpuMove == "paper")
-    ) {
-      currentState.history.myWins = currentState.history.myWins + 1;
-      currentState.lastWinner = "user";
-    } else if (myMove == cpuMove) {
-      currentState.history.draws = currentState.history.draws + 1;
-      currentState.lastWinner = "draw";
-    } else {
-      currentState.history.cpuWins = currentState.history.cpuWins + 1;
-      currentState.lastWinner = "cpu";
-    }
-
-    this.setState(currentState);
-  },
-  setMove(moves: Game) {
-    const currentState: State = this.getState();
-
-    currentState.currentMoves = moves;
-
-    this.getWinner(currentState);
   },
 };

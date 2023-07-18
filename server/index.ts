@@ -67,7 +67,7 @@ app.post("/rooms", (req, res) => {
     .then((doc) => {
       if (doc.exists) {
         const roomRef = rtDb.ref(`rooms/${uuidv4()}`);
-        roomRef.set({ currentGame: false }).then(() => {
+        roomRef.set({ currentGame: false, history: false }).then(() => {
           const roomLongId = roomRef.key;
           const roomSimpleId = (
             1000 + Math.floor(Math.random() * 999)
@@ -175,12 +175,9 @@ app.delete("/rooms/:roomId/:userId", (req, res) => {
     });
 });
 
-app.post("/rooms/:roomId/:userId", (req, res) => {
+app.patch("/rooms/:roomId/history", (req, res) => {
   const { roomId } = req.params;
-  const { userId } = req.params;
-  const { choice } = req.body;
-  const { start } = req.body;
-  console.log("entre a patch");
+  const { userId } = req.query;
 
   usersColl
     .doc(userId.toString())
@@ -193,11 +190,9 @@ app.post("/rooms/:roomId/:userId", (req, res) => {
           .then((snap) => {
             if (snap.exists) {
               const { rtDbRoomId } = snap.data();
-              const userRef = rtDb.ref(
-                `rooms/${rtDbRoomId}/currentGame/${userId}`
-              );
+              const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
               userRef
-                .update({ choice: choice, start: start })
+                .update(req.body)
                 .then(() => {
                   res.json({ msg: "update succeeded." });
                 })
@@ -216,7 +211,43 @@ app.post("/rooms/:roomId/:userId", (req, res) => {
     });
 });
 
-console.log("me pase de patch");
+app.patch("/rooms/:roomId/:userId", (req, res) => {
+  const { roomId } = req.params;
+  const { userId } = req.params;
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const userRef = rtDb.ref(
+                `rooms/${rtDbRoomId}/currentGame/${userId}`
+              );
+              userRef
+                .update(req.body)
+                .then(() => {
+                  res.json({ msg: "update succeeded." });
+                })
+                .catch(() => {
+                  res.json({ msg: "update failed." });
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
+      }
+    });
+});
 
 app.use(express.static("dist"));
 

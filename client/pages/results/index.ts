@@ -126,12 +126,18 @@ customElements.define(
     }
 
     render() {
-      const currentState = state.getState();
-      const myHistory = currentState.history.myWins;
-      const cpuHistory = currentState.history.cpuWins;
+      const logoTacho = require("url:../../images/tacho.svg");
 
-      // const logoTacho = require("url:../../images/tacho.svg");
-      const logoTacho = "https://picsum.photos/200/300";
+      const currentState = state.getState();
+
+      const myName = state.getPlayersData(1).userName;
+      const opponentName = state.getPlayersData(2).userName;
+
+      const history = currentState.rtDbData.history;
+      const myHistory = history[myName];
+      const opponentHistory = history[opponentName];
+
+      // const logoTacho = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -140,8 +146,8 @@ customElements.define(
           <div class="score">
             <h3 class="score_title">Score</h3>
             <div class="history-container">
-              <p class="history">Vos: ${myHistory}</p>
-              <p class="history">Máquina: ${cpuHistory}</p>
+              <p class="history">${myName}: ${myHistory}</p>
+              <p class="history">${opponentName}: ${opponentHistory}</p>
               <div class="delete-container">
                 <img class="delete-history" src="${logoTacho}"/>
               </div>
@@ -156,17 +162,16 @@ customElements.define(
         ".img-container"
       ) as HTMLElement;
 
-      if (currentState.lastWinner == "user") {
+      if (history.lastWinner == myName) {
         imgContainer.innerHTML = `<result-img-win>¡Ganaste!</result-img-win>`;
         // this.shadow.style.backgroundColor = "#888949E5";
-      } else if (currentState.lastWinner == "cpu") {
+      } else if (history.lastWinner == opponentName) {
         imgContainer.innerHTML = `<result-img-lose>Perdiste</result-img-lose>`;
         // this.shadow.style.backgroundColor = "#894949E5";
       } else {
         imgContainer.innerHTML = `<p class ="p-draw">¡Empate!</p>`;
         // this.shadow.style.backgroundColor = "#FDEBD0";
       }
-      console.log(currentState.lastWinner);
 
       const buttonEl = this.shadow.querySelector(
         ".button-container"
@@ -181,7 +186,8 @@ customElements.define(
       });
 
       buttonEl.addEventListener("click", () => {
-        Router.go("/details");
+        // Router.go("/share-room");
+        state.setPlayerStateDb({ start: false, choice: "" });
       });
 
       this.addStyles();

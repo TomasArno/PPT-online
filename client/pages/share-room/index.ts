@@ -1,12 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
-import {
-  State,
-  Game,
-  HistoryGame,
-  Credentials,
-  UserData,
-} from "../../interfaces";
+import { State } from "../../interfaces";
 
 customElements.define(
   "share-room",
@@ -128,6 +122,10 @@ customElements.define(
         const myData = state.getPlayersData(1);
         const opponentData = state.getPlayersData(2);
 
+        if (myData.start && opponentData.start) {
+          Router.go("/game"); // porque cada vez que se ejecuta el suscribe vuelve hasta este suscribe si ya  cargo otro componente
+        }
+
         this.shadow.innerHTML = `
         <main class="main">
           <div class="data-container">
@@ -160,11 +158,8 @@ customElements.define(
             <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
             <div class="button-container"><button-comp>¡Jugar!</button-comp></div>`;
         } else if (opponentData.online && !opponentData.start) {
-          console.log("pasé");
           dinamicContainerEl.innerHTML = `
               <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
-        } else if (myData.start && opponentData.start) {
-          Router.go("/game");
         }
 
         this.addStyles();
@@ -179,7 +174,7 @@ customElements.define(
         ) as HTMLFormElement;
 
         buttonPlayEl.addEventListener("click", () => {
-          state.setPlayerStateDb({ start: true, choice: "" });
+          state.setPlayerStateDb({ start: true });
         });
       }
     }
