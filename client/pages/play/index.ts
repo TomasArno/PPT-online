@@ -162,22 +162,22 @@ customElements.define(
         counter--;
         if (counter < 0) {
           clearInterval(intervalId);
-          // this.doNothing();
+          this.doNothing();
         }
       }, 1000);
 
-      imgContainer.addEventListener("click", (e: any) => {
+      imgContainer.addEventListener("click", (e: Event) => {
         clearInterval(intervalId);
         this.setMovements(e);
       });
     }
-    setMovements(event) {
+    setMovements(event: Event) {
       const imgContainer = this.shadow.querySelector(
         ".my-images"
       ) as HTMLElement;
       const imagesEl = imgContainer.querySelectorAll(".my-hand-img");
 
-      const selectedImg = event.target;
+      const selectedImg = event.target as HTMLImageElement;
       const urlImgSelected = selectedImg.getAttribute("src");
       const idImgSelected = selectedImg.getAttribute("id");
 
@@ -188,19 +188,18 @@ customElements.define(
       state.subscribe(() => {
         const cs = state.getState();
 
-        const myData = state.getPlayersData(1);
-        const opponentData = state.getPlayersData(2);
+        const myChoice = state.getPlayersData(1).choice;
+        const opponentChoice = state.getPlayersData(2).choice;
 
         if (
-          myData.choice &&
-          opponentData.choice &&
+          myChoice &&
+          // opponentChoice &&
           cs.lastWinner &&
           cs.rtDbData.history
         ) {
           Router.go("/results");
         }
 
-        const opponentChoice = state.getPlayersData(2).choice;
         if (opponentChoice) {
           let opponentImgSelected;
 
@@ -227,21 +226,36 @@ customElements.define(
       });
 
       setTimeout(() => {
-        console.log("me voy a results");
         state.setWinner();
       }, 2500);
     }
 
     doNothing() {
       this.shadow.innerHTML = `
+      <main class ="main">
         <div class="warning-container">
           <p class="warning">¡Recordá elegir una opción antes que pasen los 3 segundos!</p>
-
+      
           <div class ="btn-container">
             <button-comp class ="redirect-btn">Volver</button-comp>
           </div>
         </div>
+      </main>
         `;
+      const buttonEl = this.shadow.querySelector(
+        ".btn-container"
+      ) as HTMLElement;
+
+      const cs = state.getState();
+
+      buttonEl.addEventListener("click", () => {
+        cs.lastWinner = "";
+        state.setState(cs);
+
+        state.setPlayerStateDb({ start: false, choice: "" });
+
+        Router.go("/share-room");
+      });
       this.addStyles();
       this.setListeners();
     }

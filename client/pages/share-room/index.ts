@@ -12,7 +12,9 @@ customElements.define(
     }
 
     connectedCallback() {
-      this.render();
+      state.subscribe(() => {
+        this.render();
+      });
     }
 
     addStyles() {
@@ -117,21 +119,25 @@ customElements.define(
       // const scissors = "https://picsum.photos/200/300";
       // const rock = "https://picsum.photos/200/300";
 
-      state.subscribe(() => {
-        const cs: State = state.getState();
-        const myData = state.getPlayersData(1);
-        const opponentData = state.getPlayersData(2);
+      const cs: State = state.getState();
+      const myData = state.getPlayersData(1);
+      const opponentData = state.getPlayersData(2);
 
-        if (myData.start && opponentData.start) {
-          Router.go("/game"); // porque cada vez que se ejecuta el suscribe vuelve hasta este suscribe si ya  cargo otro componente
-        }
+      const myUserName = myData.userName;
+      const opponentUserName = opponentData.userName;
 
-        this.shadow.innerHTML = `
+      if (myData.start && opponentData.start) {
+        Router.go("/game"); // porque cada vez que se ejecuta el suscribe vuelve hasta este suscribe si ya cargo otro componente
+      }
+
+      this.shadow.innerHTML = `
         <main class="main">
           <div class="data-container">
             <div class="player-info-container">
-              <p>${cs.userData.userName}: 0</p>
-              <p>${opponentData.userName || "Player 2"}: 0</p>
+              <p>${myUserName}: ${cs.rtDbData["history"][myUserName] || 0}</p>
+              <p>${opponentUserName || "Player 2"}: ${
+        cs.rtDbData["history"][opponentUserName] || 0
+      }</p>
             </div>
             <div class="room-info-container">
                 <p>Sala</p>
@@ -146,25 +152,24 @@ customElements.define(
           </div>
         </main>`;
 
-        const dinamicContainerEl = this.shadow.querySelector(
-          ".dinamic-container"
-        ) as HTMLElement;
+      const dinamicContainerEl = this.shadow.querySelector(
+        ".dinamic-container"
+      ) as HTMLElement;
 
-        if (!opponentData) {
-          dinamicContainerEl.innerHTML = `
+      if (!opponentData) {
+        dinamicContainerEl.innerHTML = `
           <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${cs.userData.shortRoomId}</span> <br> con tu rival.</h3>`;
-        } else if (opponentData.online && !myData.start) {
-          dinamicContainerEl.innerHTML = `
+      } else if (opponentData.online && !myData.start) {
+        dinamicContainerEl.innerHTML = `
             <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
             <div class="button-container"><button-comp>¡Jugar!</button-comp></div>`;
-        } else if (opponentData.online && !opponentData.start) {
-          dinamicContainerEl.innerHTML = `
+      } else if (opponentData.online && !opponentData.start) {
+        dinamicContainerEl.innerHTML = `
               <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
-        }
+      }
 
-        this.addStyles();
-        this.setListeners(myData, opponentData);
-      });
+      this.addStyles();
+      this.setListeners(myData, opponentData);
     }
 
     setListeners(myData, opponentData) {

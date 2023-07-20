@@ -1,4 +1,4 @@
-import { rtDb, fsDb } from "./db";
+import { rtDb } from "./db";
 import { State, Credentials } from "./interfaces";
 
 const API_BASE_URL = process.env.API_URL;
@@ -20,14 +20,6 @@ export const state = {
     lastWinner: "",
   },
   listeners: [],
-
-  // syncroWithLocalStorage() {
-  //   const localData = localStorage.getItem("saved-state");
-
-  //   if (localData != null) {
-  //     this.setState(JSON.parse(localData as any));
-  //   }
-  // },
 
   subscribe(callBack: () => any) {
     this.listeners.push(callBack);
@@ -196,7 +188,7 @@ export const state = {
       }
     );
 
-    console.log(await userStateRes.json());
+    // console.log(await userStateRes.json());
   },
 
   async setHistoryDb(properties: {}) {
@@ -237,7 +229,11 @@ export const state = {
       };
     }
 
+    console.log("entre valiendo de tomas: ", history[myData.userName]);
+    console.log("entre valiendo de mia: ", history[opponentData.userName]);
+
     if (
+      (myMove && !opponentMove) ||
       (myMove == "rock" && opponentMove == "scissors") ||
       (myMove == "paper" && opponentMove == "rock") ||
       (myMove == "scissors" && opponentMove == "paper")
@@ -251,23 +247,41 @@ export const state = {
       history[opponentData.userName] += 1;
       history.lastWinner = opponentData.userName;
     }
+    console.log("entre valiendo de tomas: ", history[myData.userName]);
+    console.log("entre valiendo de mia: ", history[opponentData.userName]);
     await this.setHistoryDb(history);
   },
 
-  async deletePlayer() {
-    const cs: State = this.getState();
-    const userDeletedRes = await fetch(
-      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
-      {
-        method: "delete",
-        headers: {
-          "content-type": "application/json",
-        },
-      }
-    );
+  // async deletePlayer() {
+  //   const cs: State = this.getState();
+  //   const userDeletedRes = await fetch(
+  //     `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
+  //     {
+  //       method: "delete",
+  //       headers: {
+  //         "content-type": "application/json",
+  //       },
+  //     }
+  //   );
 
-    console.log(await userDeletedRes.json());
-  },
+  //   // console.log(await userDeletedRes.json());
+  // },
+
+  // async deleteHistory() {
+  //   const cs: State = this.getState();
+
+  //   const historyStateRes = await fetch(
+  //     `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/history?userId=${cs.userData.userId}`,
+  //     {
+  //       method: "delete",
+  //       headers: {
+  //         "content-type": "application/json",
+  //       },
+  //     }
+  //   );
+
+  //   console.log(await historyStateRes.json());
+  // },
 
   getPlayersData(number: 1 | 2) {
     const cs: State = this.getState();
@@ -292,13 +306,5 @@ export const state = {
 
   setMove(moves) {
     this.setPlayerStateDb(moves);
-  },
-
-  deleteHistory() {
-    const lastState: State = this.getState();
-    this.setState({
-      ...lastState,
-      historyGame: { myWins: 0, cpuWins: 0, draws: 0 },
-    });
   },
 };

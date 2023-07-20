@@ -1,6 +1,11 @@
 import { Router } from "@vaadin/router";
-import { state } from "./state";
+
+// ROUTER INITIALIZATION
+
 import "./router";
+
+// PAGES INITIALIZATION
+
 import "./pages/auth";
 import "./pages/sign-up";
 import "./pages/log-in";
@@ -10,11 +15,13 @@ import "./pages/full-room";
 import "./pages/share-room";
 import "./pages/play";
 import "./pages/results";
+
+// COMPONENTS INITIALIZATION
+
 import "./components/button";
 import "./components/win";
 import "./components/lose";
 
 (function init() {
-  // state.syncroWithLocalStorage();
   Router.go("/");
 })();

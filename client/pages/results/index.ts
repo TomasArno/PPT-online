@@ -1,5 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import { State } from "../../interfaces";
 
 customElements.define(
   "init-results",
@@ -126,18 +127,14 @@ customElements.define(
     }
 
     render() {
-      const logoTacho = require("url:../../images/tacho.svg");
-
-      const currentState = state.getState();
+      const currentState: State = state.getState();
 
       const myName = state.getPlayersData(1).userName;
       const opponentName = state.getPlayersData(2).userName;
 
-      const history = currentState.rtDbData.history;
+      const history = currentState.rtDbData["history"];
       const myHistory = history[myName];
       const opponentHistory = history[opponentName];
-
-      // const logoTacho = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -148,9 +145,6 @@ customElements.define(
             <div class="history-container">
               <p class="history">${myName}: ${myHistory}</p>
               <p class="history">${opponentName}: ${opponentHistory}</p>
-              <div class="delete-container">
-                <img class="delete-history" src="${logoTacho}"/>
-              </div>
             </div>
           </div>
           <div class="button-container">
@@ -177,17 +171,13 @@ customElements.define(
         ".button-container"
       ) as HTMLElement;
 
-      const deleteHistoryEl = this.shadow.querySelector(
-        ".delete-history"
-      ) as HTMLElement;
-
-      deleteHistoryEl.addEventListener("click", () => {
-        state.deleteHistory();
-      });
-
       buttonEl.addEventListener("click", () => {
-        // Router.go("/share-room");
+        currentState.lastWinner = "";
+        state.setState(currentState);
+
         state.setPlayerStateDb({ start: false, choice: "" });
+
+        Router.go("/share-room");
       });
 
       this.addStyles();

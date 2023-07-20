@@ -137,6 +137,44 @@ app.get("/rooms/:roomId", (req, res) => {
     });
 });
 
+app.patch("/rooms/:roomId/:userId", (req, res) => {
+  const { roomId } = req.params;
+  const { userId } = req.params;
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const userRef = rtDb.ref(
+                `rooms/${rtDbRoomId}/currentGame/${userId}`
+              );
+              userRef
+                .update(req.body)
+                .then(() => {
+                  res.json("update succeeded.");
+                })
+                .catch(() => {
+                  res.json("update failed.");
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
+      }
+    });
+});
+
 app.delete("/rooms/:roomId/:userId", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.params;
@@ -158,7 +196,7 @@ app.delete("/rooms/:roomId/:userId", (req, res) => {
               userRef
                 .remove()
                 .then(() => {
-                  res.json("Remove succeeded.");
+                  res.json("successfully removed");
                 })
                 .catch(() => {
                   res.json("Remove failed.");
@@ -194,10 +232,10 @@ app.patch("/rooms/:roomId/history", (req, res) => {
               userRef
                 .update(req.body)
                 .then(() => {
-                  res.json({ msg: "update succeeded." });
+                  res.json("update succeeded.");
                 })
                 .catch(() => {
-                  res.json({ msg: "update failed." });
+                  res.json("update failed.");
                 });
             } else {
               res.status(401).json({ err: "Entered room does not exist" });
@@ -211,9 +249,9 @@ app.patch("/rooms/:roomId/history", (req, res) => {
     });
 });
 
-app.patch("/rooms/:roomId/:userId", (req, res) => {
+app.delete("/rooms/:roomId/history", (req, res) => {
   const { roomId } = req.params;
-  const { userId } = req.params;
+  const { userId } = req.query;
 
   usersColl
     .doc(userId.toString())
@@ -226,16 +264,14 @@ app.patch("/rooms/:roomId/:userId", (req, res) => {
           .then((snap) => {
             if (snap.exists) {
               const { rtDbRoomId } = snap.data();
-              const userRef = rtDb.ref(
-                `rooms/${rtDbRoomId}/currentGame/${userId}`
-              );
+              const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
               userRef
-                .update(req.body)
+                .remove()
                 .then(() => {
-                  res.json({ msg: "update succeeded." });
+                  res.json("successfully removed");
                 })
                 .catch(() => {
-                  res.json({ msg: "update failed." });
+                  res.json("delete failed.");
                 });
             } else {
               res.status(401).json({ err: "Entered room does not exist" });
