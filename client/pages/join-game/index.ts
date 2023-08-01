@@ -134,10 +134,10 @@ customElements.define(
 
     setListeners() {
       const inputEl = this.shadow.querySelector(".input") as HTMLFormElement;
+
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
         state.joinRoom(inputEl.value).then((res) => {
-          console.log("me voy al details");
-          if (res) Router.go("/share-room");
+          res ? Router.go("/share-room") : Router.go("/full-room");
         });
       });
     }

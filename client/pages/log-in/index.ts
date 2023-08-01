@@ -1,5 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import { State } from "../../interfaces";
 
 customElements.define(
   "init-login",
@@ -147,22 +148,33 @@ customElements.define(
         ".email"
       ) as HTMLFormElement;
 
+      let enteredFlag = false;
+
       this.shadow.querySelector(".button").addEventListener("click", () => {
-        state.auth(inputEmailEl.value).then(() => {
-          const cs = state.getState();
-          if (
-            cs.userData.userId &&
-            cs.userData.userEmail &&
-            cs.userData.userName
-          ) {
-            console.log(
-              `your userID is ${cs.userData.userId},
-              your userName is ${cs.userData.userName},
-              your userEmail is ${cs.userData.userEmail}`
-            );
-            Router.go("/welcome");
+        if (!enteredFlag) {
+          enteredFlag = true;
+
+          const localData = state.getLocalStorage();
+          // ver porque si me logueo con alguien que no existe pasa
+
+          if (localData && localData.userEmail == inputEmailEl.value) {
+            state.syncroLocalStorage();
+
+            if (state.hasBasicCredentials()) {
+              console.log("me logue con data del local");
+
+              Router.go("/welcome");
+            }
+          } else {
+            state.auth(inputEmailEl.value).then(() => {
+              if (state.hasBasicCredentials()) {
+                console.log("me logue con firebase");
+                state.setLocalStorage();
+                Router.go("/welcome");
+              }
+            });
           }
-        });
+        }
       });
     }
   }

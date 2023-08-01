@@ -75,8 +75,11 @@ customElements.define(
 
         .button-container {
           width: 400px;
-
         }
+      }
+
+      .log-out {
+        
       }
   `;
       this.shadow.appendChild(style);
@@ -96,6 +99,7 @@ customElements.define(
         <div class="button-container">
           <button-comp class="new-game">Nuevo Juego</button-comp>
           <button-comp class="join-game">Ingresar a una sala</button-comp>
+          <button-comp class="log-out">Cerrar sesión</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -116,8 +120,14 @@ customElements.define(
           Router.go("/share-room");
         });
       });
+
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
         Router.go("/join-game");
+      });
+
+      this.shadow.querySelector(".log-out").addEventListener("click", () => {
+        state.deleteLocalStorage();
+        Router.go("/");
       });
     }
   }

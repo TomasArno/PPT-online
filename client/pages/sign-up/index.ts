@@ -149,22 +149,31 @@ customElements.define(
       ) as HTMLFormElement;
       const inputNameEl = this.shadow.querySelector(".name") as HTMLFormElement;
 
+      let enteredFlag = false;
+
       this.shadow.querySelector(".button").addEventListener("click", () => {
-        state.setCredentials({
-          userName: inputNameEl.value,
-          userEmail: inputEmailEl.value,
-        });
+        if (!enteredFlag) {
+          enteredFlag = true;
 
-        const ls = state.getState();
-
-        if (ls.userData.userName && ls.userData.userEmail) {
-          state.signUp(ls.userData.userEmail, ls.userData.userName).then(() => {
-            const cs = state.getState();
-            if (cs.userData.userId) {
-              console.log(`your userID is ${cs.userData.userId}`);
-              Router.go("/welcome");
-            }
+          state.setCredentials({
+            userName: inputNameEl.value,
+            userEmail: inputEmailEl.value,
           });
+
+          const ls = state.getState();
+          const userName = ls.userData.userName;
+          const userEmail = ls.userData.userEmail;
+
+          if (userName && userEmail) {
+            state.signUp(userEmail, userName).then(() => {
+              const cs = state.getState();
+
+              if (cs.userData.userId) {
+                state.setLocalStorage();
+                Router.go("/welcome");
+              }
+            });
+          }
         }
       });
     }

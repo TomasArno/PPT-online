@@ -68,13 +68,6 @@ customElements.define(
         }
       }
       
-      .button-container {
-        width: 320px;
-        display: flex;
-        flex-direction: column;
-        row-gap: 13px;
-      }
-      
       .images {
         position: relative;
         top: 101px;
@@ -119,10 +112,7 @@ customElements.define(
       <main class="main">
         <h1 class="intro-title">Piedra Papel ó Tijera</h1>
         <div class="info-container">
-          <h3 class="descrip-title">Ups, esta sala está completa y tu nombre no coincide con nadie en la sala..</h3>
-          <div class="button-container">
-          <button-comp class="new-game">Volver</button-comp>
-          </div>
+          <h3 class="descrip-title">Ups, esta sala está completa o no existe...</h3>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -134,16 +124,13 @@ customElements.define(
 
       this.addStyles();
 
-      this.setListeners();
+      this.setRedirect();
     }
 
-    setListeners() {
-      // this.shadow.querySelector(".new-game").addEventListener("click", () => {
-      //   Router.go("/new-game");
-      // });
-      // this.shadow.querySelector(".join-game").addEventListener("click", () => {
-      //   Router.go("/join-game");
-      // });
+    setRedirect() {
+      setTimeout(() => {
+        Router.go("/welcome");
+      }, 2500);
     }
   }
 );

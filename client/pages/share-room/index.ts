@@ -58,6 +58,11 @@ customElements.define(
         font-size: 40px;
         line-height: 60px;
         letter-spacing: 0px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        row-gap: 40px;
       }
       
       .hand-img {
@@ -98,8 +103,10 @@ customElements.define(
       }
 
       .button-container {
+        width: 320px;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        row-gap: 15px;
       }
 
       @media (min-width: 767px) {
@@ -127,8 +134,11 @@ customElements.define(
       const opponentUserName = opponentData.userName;
 
       if (myData.start && opponentData.start) {
-        Router.go("/game"); // porque cada vez que se ejecuta el suscribe vuelve hasta este suscribe si ya cargo otro componente
+        Router.go("/game");
       }
+
+      //no crea nuevo usuario en el room sino que lo pisa, ver si los endpoints se pisan
+      // ver si el error era porque se pisaban los endpoints ya que le agregué el users y ahora se diferencias
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -159,13 +169,13 @@ customElements.define(
       if (!opponentData) {
         dinamicContainerEl.innerHTML = `
           <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${cs.userData.shortRoomId}</span> <br> con tu rival.</h3>`;
-      } else if (opponentData.online && !myData.start) {
+      } else if (!myData.start) {
         dinamicContainerEl.innerHTML = `
-            <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
-            <div class="button-container"><button-comp>¡Jugar!</button-comp></div>`;
-      } else if (opponentData.online && !opponentData.start) {
+          <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
+          <div class="button-container"><button-comp id="button-play">¡Jugar!</button-comp><button-comp id="button-back">Volver</button-comp></div>`;
+      } else if (!opponentData.start) {
         dinamicContainerEl.innerHTML = `
-              <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
+          <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
       }
 
       this.addStyles();
@@ -173,13 +183,28 @@ customElements.define(
     }
 
     setListeners(myData, opponentData) {
-      if (opponentData.online && !myData.start) {
+      if (opponentData && !myData.start) {
         const buttonPlayEl = this.shadow.querySelector(
-          ".button-container"
+          "#button-play"
         ) as HTMLFormElement;
 
+        const buttonBackEl = this.shadow.querySelector(
+          "#button-back"
+        ) as HTMLFormElement;
+        let enteredFlag = false;
+
         buttonPlayEl.addEventListener("click", () => {
-          state.setPlayerStateDb({ start: true });
+          if (!enteredFlag) {
+            console.log("seteo el start en true");
+
+            enteredFlag = true;
+            state.setPlayerStateDb({ start: true });
+          }
+        });
+
+        buttonBackEl.addEventListener("click", () => {
+          state.deletePlayer();
+          Router.go("/welcome");
         });
       }
     }

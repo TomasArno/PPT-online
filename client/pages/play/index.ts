@@ -191,12 +191,7 @@ customElements.define(
         const myChoice = state.getPlayersData(1).choice;
         const opponentChoice = state.getPlayersData(2).choice;
 
-        if (
-          myChoice &&
-          // opponentChoice &&
-          cs.lastWinner &&
-          cs.rtDbData.history
-        ) {
+        if (myChoice && opponentChoice && cs.rtDbData.history.lastWinner) {
           Router.go("/results");
         }
 

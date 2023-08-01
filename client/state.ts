@@ -21,6 +21,55 @@ export const state = {
   },
   listeners: [],
 
+  //porque si recargo al jugar no saca al otro jugador instantaneamente y solo lo hace al terminar la jugada
+
+  syncroLocalStorage() {
+    const ls: State = state.getState();
+    const localData = state.getLocalStorage();
+
+    if (localData) {
+      ls.userData.userId = localData.userId;
+      ls.userData.userEmail = localData.userEmail;
+      ls.userData.userName = localData.userName;
+      console.log(ls.userData.userName);
+
+      state.setState(ls);
+    }
+  },
+
+  deleteLocalStorage() {
+    try {
+      localStorage.removeItem("user-data");
+    } catch (error) {
+      console.log("No se pudo borrar el localStorage");
+    }
+  },
+
+  getLocalStorage() {
+    try {
+      return JSON.parse(localStorage.getItem("user-data"));
+    } catch (error) {
+      console.log("local storage no existe");
+    }
+  },
+
+  setLocalStorage() {
+    const cs: State = state.getState();
+
+    try {
+      localStorage.setItem(
+        "user-data",
+        JSON.stringify({
+          userId: cs.userData.userId,
+          userEmail: cs.userData.userEmail,
+          userName: cs.userData.userName,
+        })
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  },
+
   subscribe(callBack: () => any) {
     this.listeners.push(callBack);
   },
@@ -62,6 +111,16 @@ export const state = {
     cs.userData.userEmail = credentials.userEmail;
 
     this.setState(cs);
+  },
+
+  hasBasicCredentials() {
+    const cs: State = state.getState();
+
+    if (cs.userData.userName && cs.userData.userId && cs.userData.userEmail) {
+      return true;
+    } else {
+      return false;
+    }
   },
 
   async auth(userEmail) {
@@ -178,7 +237,7 @@ export const state = {
   async setPlayerStateDb(properties: {}) {
     const cs: State = this.getState();
     const userStateRes = await fetch(
-      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/users/${cs.userData.userId}`,
       {
         method: "PATCH",
         headers: {
@@ -188,10 +247,12 @@ export const state = {
       }
     );
 
-    // console.log(await userStateRes.json());
+    console.log(await userStateRes.json());
   },
 
   async setHistoryDb(properties: {}) {
+    console.log("entre a set history");
+
     const cs: State = this.getState();
 
     cs.lastWinner = properties["lastWinner"];
@@ -212,6 +273,8 @@ export const state = {
   },
 
   async setWinner() {
+    console.log("entre a set winner");
+
     const cs: State = this.getState();
 
     let history = cs.rtDbData["history"];
@@ -225,7 +288,7 @@ export const state = {
       history = {
         [myData.userName]: 0,
         [opponentData.userName]: 0,
-        ["draws"]: 0,
+        draws: 0,
       };
     }
 
@@ -252,20 +315,20 @@ export const state = {
     await this.setHistoryDb(history);
   },
 
-  // async deletePlayer() {
-  //   const cs: State = this.getState();
-  //   const userDeletedRes = await fetch(
-  //     `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/${cs.userData.userId}`,
-  //     {
-  //       method: "delete",
-  //       headers: {
-  //         "content-type": "application/json",
-  //       },
-  //     }
-  //   );
+  async deletePlayer() {
+    const cs: State = this.getState();
+    const userDeletedRes = await fetch(
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/users/${cs.userData.userId}`,
+      {
+        method: "delete",
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
 
-  //   // console.log(await userDeletedRes.json());
-  // },
+    console.log(await userDeletedRes.json());
+  },
 
   // async deleteHistory() {
   //   const cs: State = this.getState();

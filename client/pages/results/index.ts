@@ -82,11 +82,6 @@ customElements.define(
           
           font-size: 55px;
         }
-        
-        .button-container {
-          width: 400px;
-          height: 80px;
-        }
       }
       
       .p-draw{
@@ -100,26 +95,6 @@ customElements.define(
       @media (min-width: 1023px) {
         .p-draw {
           font-size: 80px;
-        }
-      }
-      
-      .delete-container {
-        align-self: end;
-        margin-left: 6px;
-      }
-      @media (min-width: 1023px) {
-        .delete-container {
-          align-self: start;
-        }
-      }
-      
-      .delete-history {
-        height: 35px;
-        display: flex;
-      }
-      @media (min-width: 1023px) {
-        .delete-history {
-          height: 43px;
         }
       }
       `;
@@ -147,9 +122,6 @@ customElements.define(
               <p class="history">${opponentName}: ${opponentHistory}</p>
             </div>
           </div>
-          <div class="button-container">
-            <button-comp>Volver a jugar!</button-comp>
-          </div>
         </main>`;
 
       const imgContainer = this.shadow.querySelector(
@@ -158,29 +130,23 @@ customElements.define(
 
       if (history.lastWinner == myName) {
         imgContainer.innerHTML = `<result-img-win>¡Ganaste!</result-img-win>`;
-        // this.shadow.style.backgroundColor = "#888949E5";
       } else if (history.lastWinner == opponentName) {
         imgContainer.innerHTML = `<result-img-lose>Perdiste</result-img-lose>`;
-        // this.shadow.style.backgroundColor = "#894949E5";
       } else {
         imgContainer.innerHTML = `<p class ="p-draw">¡Empate!</p>`;
-        // this.shadow.style.backgroundColor = "#FDEBD0";
       }
 
-      const buttonEl = this.shadow.querySelector(
-        ".button-container"
-      ) as HTMLElement;
+      this.addStyles();
+      this.setTimer();
+    }
 
-      buttonEl.addEventListener("click", () => {
-        currentState.lastWinner = "";
-        state.setState(currentState);
-
+    setTimer() {
+      setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
 
+        state.setHistoryDb({ lastWinner: "" });
         Router.go("/share-room");
-      });
-
-      this.addStyles();
+      }, 3000);
     }
   }
 );

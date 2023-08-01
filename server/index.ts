@@ -12,8 +12,9 @@ app.use(cors());
 
 const usersColl = fsDb.collection("users");
 const roomsColl = fsDb.collection("rooms");
-//cambiar endpoint por users
-//EVALUAR SI SACAR EL USER ID DE LAS PETICIONES, SI YA ME AUTHORIZO AL PRINCIPIO o si se puede modificar
+
+//cambiar x entidad users
+
 app.post("/signup", (req, res) => {
   const { userEmail } = req.body;
   const { userName } = req.body;
@@ -60,6 +61,7 @@ app.post("/auth", (req, res) => {
 });
 
 app.post("/rooms", (req, res) => {
+  console.log("get a 62");
   const { userId } = req.body;
   usersColl
     .doc(userId)
@@ -94,6 +96,8 @@ app.get("/rooms/:roomId", (req, res) => {
   const { userName } = req.query;
   const { roomId } = req.params;
 
+  console.log("get a 92");
+
   usersColl
     .doc(userId.toString())
     .get()
@@ -115,7 +119,6 @@ app.get("/rooms/:roomId", (req, res) => {
                   roomUserRef.set({
                     userName,
                     choice: "",
-                    online: true,
                     start: false,
                   });
                   res.json({ rtDbRoomId });
@@ -137,45 +140,7 @@ app.get("/rooms/:roomId", (req, res) => {
     });
 });
 
-app.patch("/rooms/:roomId/:userId", (req, res) => {
-  const { roomId } = req.params;
-  const { userId } = req.params;
-
-  usersColl
-    .doc(userId.toString())
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        roomsColl
-          .doc(roomId)
-          .get()
-          .then((snap) => {
-            if (snap.exists) {
-              const { rtDbRoomId } = snap.data();
-              const userRef = rtDb.ref(
-                `rooms/${rtDbRoomId}/currentGame/${userId}`
-              );
-              userRef
-                .update(req.body)
-                .then(() => {
-                  res.json("update succeeded.");
-                })
-                .catch(() => {
-                  res.json("update failed.");
-                });
-            } else {
-              res.status(401).json({ err: "Entered room does not exist" });
-            }
-          });
-      } else {
-        res
-          .status(401)
-          .json({ err: "User ID does not exist, please authenticate" });
-      }
-    });
-});
-
-app.delete("/rooms/:roomId/:userId", (req, res) => {
+app.delete("/rooms/:roomId/users/:userId", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.params;
 
@@ -213,9 +178,51 @@ app.delete("/rooms/:roomId/:userId", (req, res) => {
     });
 });
 
+app.patch("/rooms/:roomId/users/:userId", (req, res) => {
+  const { roomId } = req.params;
+  const { userId } = req.params;
+  console.log("patch de userID");
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const userRef = rtDb.ref(
+                `rooms/${rtDbRoomId}/currentGame/${userId}`
+              );
+              userRef
+                .update(req.body)
+                .then(() => {
+                  res.json("update succeeded.");
+                })
+                .catch(() => {
+                  res.json("update failed.");
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
+      }
+    });
+});
+
 app.patch("/rooms/:roomId/history", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.query;
+
+  console.log("patch history");
+  // console.log("room ID", roomId);
 
   usersColl
     .doc(userId.toString())
@@ -249,41 +256,41 @@ app.patch("/rooms/:roomId/history", (req, res) => {
     });
 });
 
-app.delete("/rooms/:roomId/history", (req, res) => {
-  const { roomId } = req.params;
-  const { userId } = req.query;
+// app.delete("/rooms/:roomId/history", (req, res) => {
+//   const { roomId } = req.params;
+//   const { userId } = req.query;
 
-  usersColl
-    .doc(userId.toString())
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        roomsColl
-          .doc(roomId)
-          .get()
-          .then((snap) => {
-            if (snap.exists) {
-              const { rtDbRoomId } = snap.data();
-              const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
-              userRef
-                .remove()
-                .then(() => {
-                  res.json("successfully removed");
-                })
-                .catch(() => {
-                  res.json("delete failed.");
-                });
-            } else {
-              res.status(401).json({ err: "Entered room does not exist" });
-            }
-          });
-      } else {
-        res
-          .status(401)
-          .json({ err: "User ID does not exist, please authenticate" });
-      }
-    });
-});
+//   usersColl
+//     .doc(userId.toString())
+//     .get()
+//     .then((doc) => {
+//       if (doc.exists) {
+//         roomsColl
+//           .doc(roomId)
+//           .get()
+//           .then((snap) => {
+//             if (snap.exists) {
+//               const { rtDbRoomId } = snap.data();
+//               const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
+//               userRef
+//                 .remove()
+//                 .then(() => {
+//                   res.json("successfully removed");
+//                 })
+//                 .catch(() => {
+//                   res.json("delete failed.");
+//                 });
+//             } else {
+//               res.status(401).json({ err: "Entered room does not exist" });
+//             }
+//           });
+//       } else {
+//         res
+//           .status(401)
+//           .json({ err: "User ID does not exist, please authenticate" });
+//       }
+//     });
+// });
 
 app.use(express.static("dist"));
 

@@ -1,7 +1,6 @@
 import { Router } from "@vaadin/router";
 
 const router = new Router(document.querySelector(".root"));
-console.log("soy el Router");
 
 router.setRoutes([
   { path: "/", component: "init-auth" },
