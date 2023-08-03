@@ -33,17 +33,6 @@ customElements.define(
         justify-content: space-between;
       }
       
-      .intro-title {
-        margin-top: 115px;
-        
-        color: #009048;
-        text-align: center;
-        font-size: 80px;
-        font-weight: 700;
-        line-height: 70px;
-        letter-spacing: 0em;
-      }
-      
       .button-container {
         width: 320px;
         display: flex;
@@ -52,17 +41,8 @@ customElements.define(
       }
 
       @media (min-width: 768px) {
-        .intro-title {
-
-          margin-top: 65px;
-          width: 40%;
-          font-size: 80px;
-          line-height: 90px;
-        }
-
         .button-container {
           width: 400px;
-
         }
       }
 
@@ -91,16 +71,13 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        <title-comp></title-comp>
         <div class="button-container">
-          <button-comp class="sign-up btn">Sign Up</button-comp>
-          <button-comp class="log-in btn">Log In</button-comp>
+          <button-comp class="sign-up btn">Registrarse</button-comp>
+          <button-comp class="log-in btn">Iniciar Sesión</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">

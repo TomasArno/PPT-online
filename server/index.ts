@@ -13,9 +13,7 @@ app.use(cors());
 const usersColl = fsDb.collection("users");
 const roomsColl = fsDb.collection("rooms");
 
-// //cambiar x entidad users
-
-app.post("/signup", (req, res) => {
+app.post("/users", (req, res) => {
   const { userEmail } = req.body;
   const { userName } = req.body;
 
@@ -39,8 +37,8 @@ app.post("/signup", (req, res) => {
     });
 });
 
-app.post("/auth", (req, res) => {
-  const { userEmail } = req.body;
+app.get("/users/login", (req, res) => {
+  const { userEmail } = req.query;
 
   usersColl
     .where("userEmail", "==", userEmail)
@@ -255,42 +253,6 @@ app.patch("/rooms/:roomId/history", (req, res) => {
       }
     });
 });
-
-// app.delete("/rooms/:roomId/history", (req, res) => {
-//   const { roomId } = req.params;
-//   const { userId } = req.query;
-
-//   usersColl
-//     .doc(userId.toString())
-//     .get()
-//     .then((doc) => {
-//       if (doc.exists) {
-//         roomsColl
-//           .doc(roomId)
-//           .get()
-//           .then((snap) => {
-//             if (snap.exists) {
-//               const { rtDbRoomId } = snap.data();
-//               const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
-//               userRef
-//                 .remove()
-//                 .then(() => {
-//                   res.json("successfully removed");
-//                 })
-//                 .catch(() => {
-//                   res.json("delete failed.");
-//                 });
-//             } else {
-//               res.status(401).json({ err: "Entered room does not exist" });
-//             }
-//           });
-//       } else {
-//         res
-//           .status(401)
-//           .json({ err: "User ID does not exist, please authenticate" });
-//       }
-//     });
-// });
 
 app.use(express.static("dist"));
 

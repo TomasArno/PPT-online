@@ -173,20 +173,25 @@ customElements.define(
         const buttonBackEl = this.shadow.querySelector(
           "#button-back"
         ) as HTMLFormElement;
+
         let enteredFlag = false;
+        const intervalId = setInterval(() => {
+          enteredFlag = false;
+        }, 1500);
 
         buttonPlayEl.addEventListener("click", () => {
           if (!enteredFlag) {
-            console.log("seteo el start en true");
-
             enteredFlag = true;
-            state.setPlayerStateDb({ start: true });
+            state.setPlayerStateDb({ start: true }).then(() => {
+              clearInterval(intervalId);
+            });
           }
         });
 
         buttonBackEl.addEventListener("click", () => {
           state.deletePlayer();
           Router.go("/welcome");
+          clearInterval(intervalId);
         });
       }
     }

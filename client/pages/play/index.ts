@@ -118,23 +118,19 @@ customElements.define(
       this.shadow.appendChild(style);
     }
 
-    setListeners() {
-      const redirectBtn = this.shadow.querySelector(
-        ".redirect-btn"
-      ) as HTMLElement;
+    setTimer() {
+      setTimeout(() => {
+        state.setPlayerStateDb({ start: false, choice: "" });
 
-      redirectBtn.addEventListener("click", () => {
+        state.setHistoryDb({ lastWinner: "" });
         Router.go("/share-room");
-      });
+      }, 3000);
     }
 
     render() {
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/tijera.svg");
       const rock = require("url:../../images/piedra.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -164,15 +160,26 @@ customElements.define(
         }
       }, 1000);
 
+      let enteredFlag = false;
+
+      setInterval(() => {
+        enteredFlag = false;
+      }, 1200);
+
       imgContainer.addEventListener("click", (e: Event) => {
         clearInterval(intervalId);
-        this.setMovements(e);
+        if (!enteredFlag) {
+          enteredFlag = true;
+          this.setMovements(e);
+        }
       });
     }
+
     setMovements(event: Event) {
       const imgContainer = this.shadow.querySelector(
         ".my-images"
       ) as HTMLElement;
+
       const imagesEl = imgContainer.querySelectorAll(".my-hand-img");
 
       const selectedImg = event.target as HTMLImageElement;
@@ -219,7 +226,12 @@ customElements.define(
       });
 
       setTimeout(() => {
-        state.setWinner();
+        let flagSetWinner = false;
+
+        if (!flagSetWinner) {
+          flagSetWinner = true;
+          state.setWinner();
+        }
       }, 2500);
     }
 
@@ -228,29 +240,11 @@ customElements.define(
       <main class ="main">
         <div class="warning-container">
           <p class="warning">¡Recordá elegir una opción antes que pasen los 3 segundos!</p>
-      
-          <div class ="btn-container">
-            <button-comp class ="redirect-btn">Volver</button-comp>
-          </div>
         </div>
       </main>
         `;
-      const buttonEl = this.shadow.querySelector(
-        ".btn-container"
-      ) as HTMLElement;
-
-      const cs = state.getState();
-
-      buttonEl.addEventListener("click", () => {
-        cs.lastWinner = "";
-        state.setState(cs);
-
-        state.setPlayerStateDb({ start: false, choice: "" });
-
-        Router.go("/share-room");
-      });
       this.addStyles();
-      this.setListeners();
+      this.setTimer();
     }
   }
 );

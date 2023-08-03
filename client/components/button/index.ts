@@ -37,7 +37,13 @@ customElements.define(
         letter-spacing: 0.05em;
         text-align: center;
 
-      }`;
+      }
+
+      .button:hover {
+        background-color: #006cfccc;
+      }
+      
+      `;
 
       this.shadow.appendChild(style);
     }

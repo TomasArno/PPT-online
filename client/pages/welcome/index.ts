@@ -34,41 +34,23 @@ customElements.define(
         justify-content: space-between;
       }
       
-      .intro-title {
-        margin-top: 115px;
-        
-        color: #009048;
-        text-align: center;
-        font-size: 80px;
-        font-weight: 700;
-        line-height: 70px;
-        letter-spacing: 0em;
-      }
-      
       .button-container {
         width: 320px;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
       }
+      
+      @media (min-width: 767px) {
+        .button-container {
+          width: 400px;
+        }
+      }
 
       .btn {
         height: 50px;
       }
 
-      @media (min-width: 767px) {
-        .intro-title {
-          margin-top: 65px;
-          width: 40%;
-          font-size: 80px;
-          line-height: 90px;
-        }
-
-        .button-container {
-          width: 400px;
-        }
-
-      }
       
       .hand-img {
         height: 170px;
@@ -89,13 +71,10 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        <title-comp></title-comp>
         <div class="button-container">
           <button-comp class="new-game btn">Nuevo Juego</button-comp>
           <button-comp class="join-game btn">Ingresar a una sala</button-comp>
@@ -117,12 +96,17 @@ customElements.define(
     setListeners() {
       let enteredFlag = false;
 
+      const intervalId = setInterval(() => {
+        enteredFlag = false;
+      }, 1500);
+
       this.shadow.querySelector(".new-game").addEventListener("click", () => {
         if (!enteredFlag) {
           enteredFlag = true;
 
           state.createRoom().then(() => {
             Router.go("/share-room");
+            clearInterval(intervalId);
           });
         }
       });
@@ -132,6 +116,7 @@ customElements.define(
           enteredFlag = true;
 
           Router.go("/join-game");
+          clearInterval(intervalId);
         }
       });
 
@@ -140,6 +125,7 @@ customElements.define(
           enteredFlag = true;
           state.deleteLocalStorage();
           Router.go("/");
+          clearInterval(intervalId);
         }
       });
     }

@@ -20,6 +20,7 @@ import "./pages/results";
 
 // COMPONENTS INITIALIZATION
 
+import "./components/title";
 import "./components/button";
 import "./components/win";
 import "./components/lose";

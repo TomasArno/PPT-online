@@ -34,23 +34,18 @@ customElements.define(
         align-items: center;
         justify-content: space-between;
       }
-      
-      .intro-title {
-        margin-top: 115px;
-        
-        color: #009048;
-        text-align: center;
-        font-size: 80px;
-        font-weight: 700;
-        line-height: 70px;
-        letter-spacing: 0em;
-      }
 
       .form {
         width: 320px;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
+      }
+
+      @media (min-width: 768px) {
+        .form {
+          width: 400px;
+        }
       }
 
       .btn {
@@ -66,21 +61,6 @@ customElements.define(
       @media (min-width: 767px) {
         .hand-img {
           height: 230px;
-        }
-      }
-
-      @media (min-width: 768px) {
-        .intro-title {
-
-          margin-top: 65px;
-          width: 40%;
-          font-size: 80px;
-          line-height: 90px;
-        }
-
-        .form {
-          width: 400px;
-
         }
       }
 
@@ -114,17 +94,14 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        <title-comp></title-comp>
         
         <form class="form">
           <input placeholder="Tu email" type="email" class="email input" />
-          <button-comp class="btn">Log In</button-comp>
+          <button-comp class="btn">Iniciar Sesión</button-comp>
         </form>
 
         <div class="images">
@@ -147,6 +124,10 @@ customElements.define(
 
       let enteredFlag = false;
 
+      const intervalId = setInterval(() => {
+        enteredFlag = false;
+      }, 1500);
+
       this.shadow.querySelector(".btn").addEventListener("click", () => {
         if (!enteredFlag) {
           enteredFlag = true;
@@ -160,15 +141,16 @@ customElements.define(
               console.log("me logue con data del local");
 
               Router.go("/welcome");
+              clearInterval(intervalId);
             }
           } else {
             state.auth(inputEmailEl.value).then(() => {
-              console.log(state.getState());
-
               if (state.hasBasicCredentials()) {
                 console.log("me logue con firebase");
                 state.setLocalStorage();
+
                 Router.go("/welcome");
+                clearInterval(intervalId);
               }
             });
           }

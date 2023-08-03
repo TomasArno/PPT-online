@@ -1,5 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import { State } from "../../interfaces";
 
 customElements.define(
   "init-signup",
@@ -32,32 +33,6 @@ customElements.define(
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-      }
-      
-      .intro-title {
-        margin-top: 115px;
-        
-        color: #009048;
-        text-align: center;
-        font-size: 80px;
-        font-weight: 700;
-        line-height: 70px;
-        letter-spacing: 0em;
-      }
-
-      @media (min-width: 768px) {
-        .intro-title {
-
-          margin-top: 65px;
-          width: 40%;
-          font-size: 80px;
-          line-height: 90px;
-        }
-
-        .comps-container {
-          width: 400px;
-
-        }
       }
 
       .form {
@@ -113,18 +88,15 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        <title-comp></title-comp>
         
         <form class="form">
           <input placeholder="Tu email" type="email" class="email input" />
           <input placeholder="Tu nombre" type="text" class="name input" />
-          <button-comp class="button btn">Sign Up</button-comp>
+          <button-comp class="button btn">Registrarse</button-comp>
         </form>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -147,6 +119,10 @@ customElements.define(
 
       let enteredFlag = false;
 
+      const intervalId = setInterval(() => {
+        enteredFlag = false;
+      }, 1500);
+
       this.shadow.querySelector(".button").addEventListener("click", () => {
         if (!enteredFlag) {
           enteredFlag = true;
@@ -156,7 +132,7 @@ customElements.define(
             userEmail: inputEmailEl.value,
           });
 
-          const ls = state.getState();
+          const ls: State = state.getState();
           const userName = ls.userData.userName;
           const userEmail = ls.userData.userEmail;
 
@@ -165,8 +141,9 @@ customElements.define(
               const cs = state.getState();
 
               if (cs.userData.userId) {
-                // state.setLocalStorage();
+                state.setLocalStorage();
                 Router.go("/welcome");
+                clearInterval(intervalId);
               }
             });
           }

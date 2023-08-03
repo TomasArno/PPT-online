@@ -21,11 +21,9 @@ export const state = {
   },
   listeners: [],
 
-  //porque si recargo al jugar no saca al otro jugador instantaneamente y solo lo hace al terminar la jugada
-
   syncroLocalStorage() {
-    const ls: State = state.getState();
-    const localData = state.getLocalStorage();
+    const ls: State = this.getState();
+    const localData = this.getLocalStorage();
 
     if (localData) {
       ls.userData.userId = localData.userId;
@@ -33,7 +31,7 @@ export const state = {
       ls.userData.userName = localData.userName;
       console.log(ls.userData.userName);
 
-      state.setState(ls);
+      this.setState(ls);
     }
   },
 
@@ -54,7 +52,7 @@ export const state = {
   },
 
   setLocalStorage() {
-    const cs: State = state.getState();
+    const cs: State = this.getState();
 
     try {
       localStorage.setItem(
@@ -88,9 +86,9 @@ export const state = {
 
   connectChatroom() {
     const lastState: State = this.getState();
-    console.log("me conecto al chatroom");
 
     const chatRoomsRef = rtDb.ref(`/rooms/${lastState.userData.longRoomId}`);
+    console.log("me conecto al chatroom");
 
     chatRoomsRef.on("value", (snapshot) => {
       let data = snapshot.val();
@@ -112,7 +110,7 @@ export const state = {
   },
 
   hasBasicCredentials() {
-    const cs: State = state.getState();
+    const cs: State = this.getState();
 
     if (cs.userData.userName && cs.userData.userId && cs.userData.userEmail) {
       return true;
@@ -124,15 +122,16 @@ export const state = {
   async auth(userEmail) {
     const cs: State = this.getState();
 
-    const userDataRes = await fetch(`${API_BASE_URL}/auth`, {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        userEmail: userEmail.toLowerCase(),
-      }),
-    });
+    const validatedUserEmail = userEmail.toLowerCase();
+
+    const userDataRes = await fetch(
+      `${API_BASE_URL}/users/login?userEmail=${validatedUserEmail}`,
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
 
     if (userDataRes.status != 400) {
       const userData = await userDataRes.json();
@@ -145,7 +144,7 @@ export const state = {
       cs.userData.userEmail = userEmail;
       cs.userData.userName = userName;
 
-      state.setState(cs);
+      this.setState(cs);
     } else {
       const { err } = await userDataRes.json();
       console.error(err);
@@ -155,7 +154,7 @@ export const state = {
   async signUp(userEmail: string, userName: string) {
     const cs: State = this.getState();
 
-    const userIdDataRes = await fetch(`${API_BASE_URL}/signup`, {
+    const userIdDataRes = await fetch(`${API_BASE_URL}/users`, {
       method: "post",
       headers: {
         "content-type": "application/json",
@@ -169,7 +168,7 @@ export const state = {
     if (userIdDataRes.status != 400) {
       const { userId } = await userIdDataRes.json();
       cs.userData.userId = userId;
-      state.setState(cs);
+      this.setState(cs);
     } else {
       const { err } = await userIdDataRes.json();
       console.error(err);
@@ -193,7 +192,7 @@ export const state = {
       const { roomSimpleId } = await userRoomIdRes.json();
 
       cs.userData.shortRoomId = roomSimpleId;
-      state.setState(cs);
+      this.setState(cs);
     } else {
       const { err } = await userRoomIdRes.json();
       console.error(err);
@@ -219,7 +218,7 @@ export const state = {
 
       cs.userData.longRoomId = rtDbRoomId;
       cs.userData.shortRoomId = roomId;
-      state.setState(cs);
+      this.setState(cs);
 
       this.connectChatroom();
 
@@ -290,9 +289,6 @@ export const state = {
       };
     }
 
-    console.log("entre valiendo de tomas: ", history[myData.userName]);
-    console.log("entre valiendo de mia: ", history[opponentData.userName]);
-
     if (
       (myMove && !opponentMove) ||
       (myMove == "rock" && opponentMove == "scissors") ||
@@ -301,15 +297,19 @@ export const state = {
     ) {
       history[myData.userName] += 1;
       history.lastWinner = myData.userName;
+      console.log("Le sume a " + myData.userName, history[myData.userName]);
     } else if (myMove == opponentMove) {
       history["draws"] += 1;
       history.lastWinner = "draw";
     } else {
       history[opponentData.userName] += 1;
       history.lastWinner = opponentData.userName;
+      console.log(
+        "Le sume a " + opponentData.userName,
+        history[opponentData.userName]
+      );
     }
-    console.log("entre valiendo de tomas: ", history[myData.userName]);
-    console.log("entre valiendo de mia: ", history[opponentData.userName]);
+
     await this.setHistoryDb(history);
   },
 
@@ -327,22 +327,6 @@ export const state = {
 
     console.log(await userDeletedRes.json());
   },
-
-  // async deleteHistory() {
-  //   const cs: State = this.getState();
-
-  //   const historyStateRes = await fetch(
-  //     `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/history?userId=${cs.userData.userId}`,
-  //     {
-  //       method: "delete",
-  //       headers: {
-  //         "content-type": "application/json",
-  //       },
-  //     }
-  //   );
-
-  //   console.log(await historyStateRes.json());
-  // },
 
   getPlayersData(number: 1 | 2) {
     const cs: State = this.getState();
