@@ -51,6 +51,24 @@ customElements.define(
         flex-direction: column;
         row-gap: 13px;
       }
+
+      .btn {
+        height: 50px;
+      }
+
+      @media (min-width: 767px) {
+        .intro-title {
+          margin-top: 65px;
+          width: 40%;
+          font-size: 80px;
+          line-height: 90px;
+        }
+
+        .button-container {
+          width: 400px;
+        }
+
+      }
       
       .hand-img {
         height: 170px;
@@ -60,26 +78,8 @@ customElements.define(
 
       @media (min-width: 767px) {
         .hand-img {
-          height: 250px;
+          height: 230px;
         }
-      }
-
-      @media (min-width: 768px) {
-        .intro-title {
-
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
-        }
-
-        .button-container {
-          width: 400px;
-        }
-      }
-
-      .log-out {
-        
       }
   `;
       this.shadow.appendChild(style);
@@ -95,11 +95,11 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
+        <h1 class="intro-title">Piedra Papel o Tijera</h1>
         <div class="button-container">
-          <button-comp class="new-game">Nuevo Juego</button-comp>
-          <button-comp class="join-game">Ingresar a una sala</button-comp>
-          <button-comp class="log-out">Cerrar sesión</button-comp>
+          <button-comp class="new-game btn">Nuevo Juego</button-comp>
+          <button-comp class="join-game btn">Ingresar a una sala</button-comp>
+          <button-comp class="log-out btn">Cerrar sesión</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -115,19 +115,32 @@ customElements.define(
     }
 
     setListeners() {
+      let enteredFlag = false;
+
       this.shadow.querySelector(".new-game").addEventListener("click", () => {
-        state.createRoom().then(() => {
-          Router.go("/share-room");
-        });
+        if (!enteredFlag) {
+          enteredFlag = true;
+
+          state.createRoom().then(() => {
+            Router.go("/share-room");
+          });
+        }
       });
 
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        Router.go("/join-game");
+        if (!enteredFlag) {
+          enteredFlag = true;
+
+          Router.go("/join-game");
+        }
       });
 
       this.shadow.querySelector(".log-out").addEventListener("click", () => {
-        state.deleteLocalStorage();
-        Router.go("/");
+        if (!enteredFlag) {
+          enteredFlag = true;
+          state.deleteLocalStorage();
+          Router.go("/");
+        }
       });
     }
   }

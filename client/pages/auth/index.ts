@@ -50,26 +50,14 @@ customElements.define(
         flex-direction: column;
         row-gap: 13px;
       }
-      
-      .hand-img {
-        height: 170px;
-        position: relative;
-        top: 40px;
-      }
-
-      @media (min-width: 767px) {
-        .hand-img {
-          height: 250px;
-        }
-      }
 
       @media (min-width: 768px) {
         .intro-title {
 
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
+          margin-top: 65px;
+          width: 40%;
+          font-size: 80px;
+          line-height: 90px;
         }
 
         .button-container {
@@ -77,6 +65,24 @@ customElements.define(
 
         }
       }
+
+      .btn {
+        height: 55px;
+      }
+      
+      .hand-img {
+        height: 170px;
+        position: relative;
+        top: 40px;
+      }
+
+      @media (min-width: 768px) {
+        .hand-img {
+          height: 230px;
+        }
+      }
+
+      
   `;
       this.shadow.appendChild(style);
     }
@@ -91,10 +97,10 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
+        <h1 class="intro-title">Piedra Papel o Tijera</h1>
         <div class="button-container">
-          <button-comp class="sign-up">Sign Up</button-comp>
-          <button-comp class="log-in">Log In</button-comp>
+          <button-comp class="sign-up btn">Sign Up</button-comp>
+          <button-comp class="log-in btn">Log In</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">

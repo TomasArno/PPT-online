@@ -52,17 +52,21 @@ customElements.define(
         row-gap: 13px;
       }
 
+      .btn {
+        height: 50px;
+      }
+
       .input {
         background-color: white;
-        border: 10px solid #001997;
+        border: 8px solid #001997;
         border-radius: 10px;
         
         width: 100%;
-        height: 72px;
+        height: 50px;
 
         color: black;
         font-family: Odibee Sans;
-        font-size: 45px;
+        font-size: 40px;
         font-weight: 400;
         line-height: 50px;
         letter-spacing: 0.05em;
@@ -82,17 +86,17 @@ customElements.define(
 
       @media (min-width: 767px) {
         .hand-img {
-          height: 250px;
+          height: 230px;
         }
       }
 
       @media (min-width: 768px) {
         .intro-title {
 
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
+          margin-top: 65px;
+          width: 40%;
+          font-size: 80px;
+          line-height: 90px;
         }
 
         .comp-container {
@@ -114,10 +118,10 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
+        <h1 class="intro-title">Piedra Papel o Tijera</h1>
         <div class="comp-container">
           <input placeholder="Room ID" class="input" />
-          <button-comp class="join-game">Ingresar a la sala</button-comp>
+          <button-comp class="join-game btn">Ingresar a la sala</button-comp>
         </div>
         <div class="images">
           <img class="hand-img" src="${rock}">
@@ -135,10 +139,14 @@ customElements.define(
     setListeners() {
       const inputEl = this.shadow.querySelector(".input") as HTMLFormElement;
 
+      let enteredFlag = false;
       this.shadow.querySelector(".join-game").addEventListener("click", () => {
-        state.joinRoom(inputEl.value).then((res) => {
-          res ? Router.go("/share-room") : Router.go("/full-room");
-        });
+        if (!enteredFlag) {
+          enteredFlag = true;
+          state.joinRoom(inputEl.value).then((res) => {
+            res ? Router.go("/share-room") : Router.go("/full-room");
+          });
+        }
       });
     }
   }

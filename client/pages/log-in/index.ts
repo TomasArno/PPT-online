@@ -45,19 +45,16 @@ customElements.define(
         line-height: 70px;
         letter-spacing: 0em;
       }
-      
-      .form-container {
+
+      .form {
         width: 320px;
         display: flex;
         flex-direction: column;
         row-gap: 13px;
       }
 
-      .form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        row-gap: 13px;
+      .btn {
+        height: 55px;
       }
       
       .hand-img {
@@ -68,20 +65,20 @@ customElements.define(
 
       @media (min-width: 767px) {
         .hand-img {
-          height: 250px;
+          height: 230px;
         }
       }
 
       @media (min-width: 768px) {
         .intro-title {
 
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
+          margin-top: 65px;
+          width: 40%;
+          font-size: 80px;
+          line-height: 90px;
         }
 
-        .comps-container {
+        .form {
           width: 400px;
 
         }
@@ -89,15 +86,15 @@ customElements.define(
 
       .input {
         background-color: white;
-        border: 10px solid #001997;
+        border: 8px solid #001997;
         border-radius: 10px;
         
         width: 100%;
-        height: 72px;
+        height: 55px;
 
         color: black;
         font-family: Odibee Sans;
-        font-size: 45px;
+        font-size: 40px;
         font-weight: 400;
         line-height: 50px;
         letter-spacing: 0.05em;
@@ -123,13 +120,13 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="form-container">
-          <form class="form">
-            <input placeholder="Tu email" type="email" class="email input" />
-            <button-comp class="button">Log In</button-comp>
-          </form>
-        </div>
+        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        
+        <form class="form">
+          <input placeholder="Tu email" type="email" class="email input" />
+          <button-comp class="btn">Log In</button-comp>
+        </form>
+
         <div class="images">
           <img class="hand-img" src="${rock}">
           <img class="hand-img" src="${paper}">
@@ -150,12 +147,11 @@ customElements.define(
 
       let enteredFlag = false;
 
-      this.shadow.querySelector(".button").addEventListener("click", () => {
+      this.shadow.querySelector(".btn").addEventListener("click", () => {
         if (!enteredFlag) {
           enteredFlag = true;
 
           const localData = state.getLocalStorage();
-          // ver porque si me logueo con alguien que no existe pasa
 
           if (localData && localData.userEmail == inputEmailEl.value) {
             state.syncroLocalStorage();
@@ -167,6 +163,8 @@ customElements.define(
             }
           } else {
             state.auth(inputEmailEl.value).then(() => {
+              console.log(state.getState());
+
               if (state.hasBasicCredentials()) {
                 console.log("me logue con firebase");
                 state.setLocalStorage();

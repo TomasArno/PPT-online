@@ -23,17 +23,17 @@ customElements.define(
 
       .button {
         background-color: #006CFC;
-        border: 10px solid #001997;
+        border: 8px solid #001997;
         border-radius: 10px;
         
         width: 100%;
-        height: 72px;
+        height: 100%;
+        min-height: 50px;
 
         color: white;
         font-family: Odibee Sans;
-        font-size: 45px;
+        font-size: 2em;
         font-weight: 400;
-        line-height: 50px;
         letter-spacing: 0.05em;
         text-align: center;
 

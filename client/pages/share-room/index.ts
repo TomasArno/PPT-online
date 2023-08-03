@@ -52,13 +52,7 @@ customElements.define(
       }
       
       .dinamic-container {
-        color: black;
-        text-align: center;
-        font-family: American Typewriter;
-        font-size: 40px;
-        line-height: 60px;
-        letter-spacing: 0px;
-
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center; 
@@ -73,32 +67,22 @@ customElements.define(
 
       @media (min-width: 767px) {
         .hand-img {
-          height: 250px;
+          height: 230px;
         }
       }
 
-      @media (min-width: 768px) {
-        .intro-title {
-
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
-        }
-
-        .button-container {
-          width: 400px;
-
-        }
+      .dinamic-title {
+        width: 65%;
+        text-align: center;
+        font-family: American Typewriter;
+        font-size: 40px;
+        line-height: 60px;
       }
-
 
       @media (min-width: 767px) {
         .dinamic-title {
-          width: 600px;
-          height: 320px;
-          font-size: 60px;
-          line-height: 60px;
+          margin-top: 65px;
+          font-size: 50px;
         }
       }
 
@@ -114,6 +98,10 @@ customElements.define(
           width: 400px;
         }
       }
+
+      .btn {
+        height: 50px;
+      }
   `;
       this.shadow.appendChild(style);
     }
@@ -122,9 +110,6 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       const cs: State = state.getState();
       const myData = state.getPlayersData(1);
@@ -136,9 +121,6 @@ customElements.define(
       if (myData.start && opponentData.start) {
         Router.go("/game");
       }
-
-      //no crea nuevo usuario en el room sino que lo pisa, ver si los endpoints se pisan
-      // ver si el error era porque se pisaban los endpoints ya que le agregué el users y ahora se diferencias
 
       this.shadow.innerHTML = `
         <main class="main">
@@ -168,14 +150,14 @@ customElements.define(
 
       if (!opponentData) {
         dinamicContainerEl.innerHTML = `
-          <h3 class="descrip-title">Compartí el código <br> <span class="room-code">${cs.userData.shortRoomId}</span> <br> con tu rival.</h3>`;
+          <h3 class="dinamic-title">Compartí el código <br> <span class="room-code">${cs.userData.shortRoomId}</span> <br> con tu rival.</h3>`;
       } else if (!myData.start) {
         dinamicContainerEl.innerHTML = `
-          <h3 class="descrip-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
-          <div class="button-container"><button-comp id="button-play">¡Jugar!</button-comp><button-comp id="button-back">Volver</button-comp></div>`;
+          <h3 class="dinamic-title">Presioná jugar y elegí: piedra, papel o tijera antes de que pasen los 3 segundos.</h3>
+          <div class="button-container"><button-comp class="btn" id="button-play">¡Jugar!</button-comp><button-comp class="btn" id="button-back">Volver</button-comp></div>`;
       } else if (!opponentData.start) {
         dinamicContainerEl.innerHTML = `
-          <h3 class="descrip-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
+          <h3 class="dinamic-title">Esperando a que <br><span class="player-name">${opponentData.userName}</span> presione<br> ¡Jugar!...</h3>`;
       }
 
       this.addStyles();

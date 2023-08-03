@@ -44,40 +44,14 @@ customElements.define(
         line-height: 70px;
         letter-spacing: 0em;
       }
-      
-      .form-container {
-        width: 320px;
-        display: flex;
-        flex-direction: column;
-        row-gap: 13px;
-      }
-
-      .form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        row-gap: 13px;
-      }
-      
-      .hand-img {
-        height: 170px;
-        position: relative;
-        top: 40px;
-      }
-
-      @media (min-width: 767px) {
-        .hand-img {
-          height: 250px;
-        }
-      }
 
       @media (min-width: 768px) {
         .intro-title {
 
-        width: 350px;
-        height: 280px;
-        font-size: 100px;
-        line-height: 90px;
+          margin-top: 65px;
+          width: 40%;
+          font-size: 80px;
+          line-height: 90px;
         }
 
         .comps-container {
@@ -86,17 +60,28 @@ customElements.define(
         }
       }
 
+      .form {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 13px;
+      }
+
+      .btn {
+        height: 55px;
+      }
+
       .input {
         background-color: white;
-        border: 10px solid #001997;
+        border: 8px solid #001997;
         border-radius: 10px;
         
         width: 100%;
-        height: 72px;
+        height: 55px;
 
         color: black;
         font-family: Odibee Sans;
-        font-size: 45px;
+        font-size: 40px;
         font-weight: 400;
         line-height: 50px;
         letter-spacing: 0.05em;
@@ -106,6 +91,18 @@ customElements.define(
       .input::placeholder {
         color: #006CFC;
         font-size: 35px;
+      }
+
+      .hand-img {
+        height: 170px;
+        position: relative;
+        top: 40px;
+      }
+
+      @media (min-width: 767px) {
+        .hand-img {
+          height: 230px;
+        }
       }
 
   `;
@@ -122,14 +119,13 @@ customElements.define(
 
       this.shadow.innerHTML = `
       <main class="main">
-        <h1 class="intro-title">Piedra Papel ó Tijera</h1>
-        <div class="form-container">
-          <form class="form">
-            <input placeholder="Tu email" type="email" class="email input" />
-            <input placeholder="Tu nombre" type="text" class="name input" />
-            <button-comp class="button">Sign Up</button-comp>
-          </form>
-        </div>
+        <h1 class="intro-title">Piedra Papel o Tijera</h1>
+        
+        <form class="form">
+          <input placeholder="Tu email" type="email" class="email input" />
+          <input placeholder="Tu nombre" type="text" class="name input" />
+          <button-comp class="button btn">Sign Up</button-comp>
+        </form>
         <div class="images">
           <img class="hand-img" src="${rock}">
           <img class="hand-img" src="${paper}">
@@ -169,7 +165,7 @@ customElements.define(
               const cs = state.getState();
 
               if (cs.userData.userId) {
-                state.setLocalStorage();
+                // state.setLocalStorage();
                 Router.go("/welcome");
               }
             });

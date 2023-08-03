@@ -84,8 +84,6 @@ export const state = {
     for (const cb of this.listeners) {
       cb();
     }
-
-    localStorage.setItem("saved-state", JSON.stringify(newState));
   },
 
   connectChatroom() {

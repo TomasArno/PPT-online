@@ -13,7 +13,7 @@ app.use(cors());
 const usersColl = fsDb.collection("users");
 const roomsColl = fsDb.collection("rooms");
 
-//cambiar x entidad users
+// //cambiar x entidad users
 
 app.post("/signup", (req, res) => {
   const { userEmail } = req.body;

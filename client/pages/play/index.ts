@@ -65,24 +65,22 @@ customElements.define(
       }
       
       .hand-selected {
-        height: 355px;
+        height: 340px;
       }
       
       .opponent-hand-img {
-        height: 355px;
+        height: 340px;
         transform: rotate(180deg);
 
         position: relative;
         bottom: 40px;
       }
 
-
       .warning-container {
         margin: auto;
         display: flex;
         flex-direction: column;
         row-gap: 50px;
-
       }
 
       @media (min-width: 767px) {

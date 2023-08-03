@@ -27,6 +27,7 @@ customElements.define(
           align-items: center;
           justify-content: space-around;
       }
+
       .score {
           background-color: white;
           border: 10px solid #000000;
@@ -34,6 +35,7 @@ customElements.define(
           width: 280px;
           height: 220px;
       }
+
       .score_title {
         font-family: Odibee Sans;
         font-size: 55px;
@@ -41,22 +43,7 @@ customElements.define(
         line-height: 0px;
         text-align: center;
       }
-      .history-container {
-        margin-top: 17px;
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        column-gap: 25px;
-        
-        font-size: 55px;
-        text-align: right;
-      }
-      @media (min-width: 1023px) {
-        .history-container {
-          flex-direction: column;
-        }
-      }
+
       .history {
         margin: 0 5px 0 0;
         
