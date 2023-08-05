@@ -1,5 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import { State } from "../../interfaces";
 
 customElements.define(
   "init-game",
@@ -122,7 +123,7 @@ customElements.define(
       setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
 
-        state.setHistoryDb({ lastWinner: "" });
+        state.patchHistoryDb({ lastWinner: "" });
         Router.go("/share-room");
       }, 3000);
     }
@@ -226,11 +227,18 @@ customElements.define(
       });
 
       setTimeout(() => {
-        let flagSetWinner = false;
+        const cs: State = state.getState();
 
-        if (!flagSetWinner) {
-          flagSetWinner = true;
-          state.setWinner();
+        const myChoice = state.getPlayersData(1).choice;
+        const opponentChoice = state.getPlayersData(2).choice;
+
+        const flagSetWinner = cs.rtDbData["history"]["flagSetWinner"];
+
+        if (!flagSetWinner && myChoice && opponentChoice) {
+          state.patchHistoryDb({ flagSetWinner: true }).then(() => {
+            console.log("llame a set winner");
+            state.setWinner();
+          });
         }
       }, 2500);
     }

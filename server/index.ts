@@ -31,8 +31,49 @@ app.post("/users", (req, res) => {
             res.json({ userId: userRef.id });
           });
       } else {
-        //ver como arrojar errores con las promesas
         res.status(400).json({ err: "User already exists" });
+      }
+    });
+});
+
+app.post("/history", (req, res) => {
+  const { userId } = req.query;
+  const { roomId } = req.body;
+
+  const { userName } = req.body;
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const userRef = rtDb.ref(`rooms/${rtDbRoomId}/history`);
+              userRef
+                .set({
+                  flagSetWinner: false,
+                  lastWinner: "",
+                  [userName]: 0,
+                })
+                .then(() => {
+                  res.json("history creation succesfully.");
+                })
+                .catch(() => {
+                  res.json("history creation failed.");
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
       }
     });
 });
@@ -59,7 +100,6 @@ app.get("/users/login", (req, res) => {
 });
 
 app.post("/rooms", (req, res) => {
-  console.log("get a 62");
   const { userId } = req.body;
   usersColl
     .doc(userId)
@@ -70,7 +110,7 @@ app.post("/rooms", (req, res) => {
         roomRef.set({ currentGame: false, history: false }).then(() => {
           const roomLongId = roomRef.key;
           const roomSimpleId = (
-            1000 + Math.floor(Math.random() * 999)
+            1000 + Math.floor(Math.random() * 9999)
           ).toString();
           roomsColl
             .doc(roomSimpleId)
@@ -94,8 +134,6 @@ app.get("/rooms/:roomId", (req, res) => {
   const { userName } = req.query;
   const { roomId } = req.params;
 
-  console.log("get a 92");
-
   usersColl
     .doc(userId.toString())
     .get()
@@ -112,7 +150,6 @@ app.get("/rooms/:roomId", (req, res) => {
                 `rooms/${rtDbRoomId}/currentGame/${userId}`
               );
               roomRef.once("value").then((snap) => {
-                // ver porque ONCE
                 if (snap.numChildren() < 2) {
                   roomUserRef.set({
                     userName,
@@ -179,7 +216,6 @@ app.delete("/rooms/:roomId/users/:userId", (req, res) => {
 app.patch("/rooms/:roomId/users/:userId", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.params;
-  console.log("patch de userID");
 
   usersColl
     .doc(userId.toString())
@@ -198,7 +234,7 @@ app.patch("/rooms/:roomId/users/:userId", (req, res) => {
               userRef
                 .update(req.body)
                 .then(() => {
-                  res.json("update succeeded.");
+                  res.json("user updated succeeded.");
                 })
                 .catch(() => {
                   res.json("update failed.");
@@ -219,9 +255,6 @@ app.patch("/rooms/:roomId/history", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.query;
 
-  console.log("patch history");
-  // console.log("room ID", roomId);
-
   usersColl
     .doc(userId.toString())
     .get()
@@ -237,7 +270,7 @@ app.patch("/rooms/:roomId/history", (req, res) => {
               userRef
                 .update(req.body)
                 .then(() => {
-                  res.json("update succeeded.");
+                  res.json("history updated succeeded.");
                 })
                 .catch(() => {
                   res.json("update failed.");

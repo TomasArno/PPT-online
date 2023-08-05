@@ -1,5 +1,6 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
+import { State } from "../../interfaces";
 
 customElements.define(
   "join-game",
@@ -112,9 +113,6 @@ customElements.define(
       const paper = require("url:../../images/papel.svg");
       const scissors = require("url:../../images/piedra.svg");
       const rock = require("url:../../images/tijera.svg");
-      // const paper = "https://picsum.photos/200/300";
-      // const scissors = "https://picsum.photos/200/300";
-      // const rock = "https://picsum.photos/200/300";
 
       this.shadow.innerHTML = `
       <main class="main">
@@ -144,7 +142,14 @@ customElements.define(
         if (!enteredFlag) {
           enteredFlag = true;
           state.joinRoom(inputEl.value).then((res) => {
-            res ? Router.go("/share-room") : Router.go("/full-room");
+            const myName = state.getState().userData.userName;
+
+            if (res) {
+              state.patchHistoryDb({ [myName]: 0 });
+              Router.go("/share-room");
+            } else {
+              Router.go("/full-room");
+            }
           });
         }
       });

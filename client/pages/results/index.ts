@@ -130,9 +130,11 @@ customElements.define(
     setTimer() {
       setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
+        console.log("seteo el estado en false del player");
 
-        state.setHistoryDb({ lastWinner: "" });
+        state.patchHistoryDb({ lastWinner: "", flagSetWinner: false });
         Router.go("/share-room");
+        console.log("seteo el lastwinner en false");
       }, 3000);
     }
   }

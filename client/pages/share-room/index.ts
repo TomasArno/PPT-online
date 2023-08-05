@@ -72,11 +72,11 @@ customElements.define(
       }
 
       .dinamic-title {
-        width: 65%;
+        width: 80%;
         text-align: center;
         font-family: American Typewriter;
-        font-size: 40px;
-        line-height: 60px;
+        font-size: 31px;
+        line-height: 45px;
       }
 
       @media (min-width: 767px) {

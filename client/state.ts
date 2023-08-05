@@ -244,11 +244,33 @@ export const state = {
       }
     );
 
-    console.log(await userStateRes.json());
+    // console.log(await userStateRes.json());
   },
 
-  async setHistoryDb(properties: {}) {
+  async createHistoryDb() {
     console.log("entre a set history");
+
+    const cs: State = this.getState();
+
+    const historyStateRes = await fetch(
+      `${API_BASE_URL}/history?userId=${cs.userData.userId}`,
+      {
+        method: "post",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          roomId: cs.userData.shortRoomId,
+          userName: cs.userData.userName,
+        }),
+      }
+    );
+
+    console.log(await historyStateRes.json());
+  },
+
+  async patchHistoryDb(properties: {}) {
+    console.log("entre a patch history");
 
     const cs: State = this.getState();
 
@@ -281,13 +303,12 @@ export const state = {
     const myMove = myData.choice;
     const opponentMove = opponentData.choice;
 
-    if (!history) {
-      history = {
-        [myData.userName]: 0,
-        [opponentData.userName]: 0,
-        draws: 0,
-      };
-    }
+    // if (!history) {
+    //   history = {
+    //     [myData.userName]: 0,
+    //     [opponentData.userName]: 0,
+    //   };
+    // }
 
     if (
       (myMove && !opponentMove) ||
@@ -298,10 +319,12 @@ export const state = {
       history[myData.userName] += 1;
       history.lastWinner = myData.userName;
       console.log("Le sume a " + myData.userName, history[myData.userName]);
-    } else if (myMove == opponentMove) {
-      history["draws"] += 1;
-      history.lastWinner = "draw";
-    } else {
+    } else if (
+      (opponentMove && !myMove) ||
+      (opponentMove == "rock" && myMove == "scissors") ||
+      (opponentMove == "paper" && myMove == "rock") ||
+      (opponentMove == "scissors" && myMove == "paper")
+    ) {
       history[opponentData.userName] += 1;
       history.lastWinner = opponentData.userName;
       console.log(
@@ -309,8 +332,9 @@ export const state = {
         history[opponentData.userName]
       );
     }
+    console.log("pase de validar quien gano y ahora llamare a sethistory");
 
-    await this.setHistoryDb(history);
+    await this.patchHistoryDb(history);
   },
 
   async deletePlayer() {

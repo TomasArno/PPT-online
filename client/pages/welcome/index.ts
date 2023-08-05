@@ -105,6 +105,7 @@ customElements.define(
           enteredFlag = true;
 
           state.createRoom().then(() => {
+            state.createHistoryDb();
             Router.go("/share-room");
             clearInterval(intervalId);
           });
