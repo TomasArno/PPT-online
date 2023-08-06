@@ -123,7 +123,7 @@ customElements.define(
       setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
 
-        state.patchHistoryDb({ lastWinner: "" });
+        // state.patchHistoryDb({ lastWinner: "" });
         Router.go("/share-room");
       }, 3000);
     }

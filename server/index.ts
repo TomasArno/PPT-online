@@ -59,6 +59,7 @@ app.post("/history", (req, res) => {
                   flagSetWinner: false,
                   lastWinner: "",
                   [userName]: 0,
+                  draws: 0,
                 })
                 .then(() => {
                   res.json("history creation succesfully.");

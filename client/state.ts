@@ -300,15 +300,9 @@ export const state = {
 
     const myData = this.getPlayersData(1);
     const opponentData = this.getPlayersData(2);
+
     const myMove = myData.choice;
     const opponentMove = opponentData.choice;
-
-    // if (!history) {
-    //   history = {
-    //     [myData.userName]: 0,
-    //     [opponentData.userName]: 0,
-    //   };
-    // }
 
     if (
       (myMove && !opponentMove) ||
@@ -331,6 +325,9 @@ export const state = {
         "Le sume a " + opponentData.userName,
         history[opponentData.userName]
       );
+    } else if (opponentMove == myMove) {
+      history["draws"] += 1;
+      history.lastWinner = "draw";
     }
     console.log("pase de validar quien gano y ahora llamare a sethistory");
 
