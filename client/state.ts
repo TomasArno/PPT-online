@@ -17,7 +17,6 @@ export const state = {
       myMove: "",
       cpuMove: "",
     },
-    lastWinner: "",
   },
   listeners: [],
 
@@ -93,6 +92,8 @@ export const state = {
     chatRoomsRef.on("value", (snapshot) => {
       let data = snapshot.val();
       console.log("CAMBIOS", data);
+      // console.log("rtdb", lastState.rtDbData["currentGame"]);
+      // console.log("rtdb type ", typeof lastState.rtDbData["currentGame"]);
 
       lastState.rtDbData = data;
 
@@ -202,6 +203,25 @@ export const state = {
     await this.joinRoom(ls.userData.shortRoomId);
   },
 
+  async deleteRoom() {
+    const cs: State = this.getState();
+
+    const roomDeletedRes = await fetch(
+      `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}?userId=${cs.userData.userId}`,
+      {
+        method: "delete",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: cs.userData.userId,
+        }),
+      }
+    );
+
+    console.log(await roomDeletedRes.json());
+  },
+
   async joinRoom(roomId) {
     const cs: State = this.getState();
 
@@ -233,6 +253,7 @@ export const state = {
 
   async setPlayerStateDb(properties: {}) {
     const cs: State = this.getState();
+
     const userStateRes = await fetch(
       `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/users/${cs.userData.userId}`,
       {
@@ -244,12 +265,10 @@ export const state = {
       }
     );
 
-    // console.log(await userStateRes.json());
+    console.log(await userStateRes.json());
   },
 
   async createHistoryDb() {
-    console.log("entre a set history");
-
     const cs: State = this.getState();
 
     const historyStateRes = await fetch(
@@ -270,12 +289,7 @@ export const state = {
   },
 
   async patchHistoryDb(properties: {}) {
-    console.log("entre a patch history");
-
     const cs: State = this.getState();
-
-    cs.lastWinner = properties["lastWinner"];
-    this.setState(cs);
 
     const userStateRes = await fetch(
       `${API_BASE_URL}/rooms/${cs.userData.shortRoomId}/history?userId=${cs.userData.userId}`,
@@ -292,8 +306,6 @@ export const state = {
   },
 
   async setWinner() {
-    console.log("entre a set winner");
-
     const cs: State = this.getState();
 
     let history = cs.rtDbData["history"];
@@ -312,7 +324,6 @@ export const state = {
     ) {
       history[myData.userName] += 1;
       history.lastWinner = myData.userName;
-      console.log("Le sume a " + myData.userName, history[myData.userName]);
     } else if (
       (opponentMove && !myMove) ||
       (opponentMove == "rock" && myMove == "scissors") ||
@@ -321,15 +332,10 @@ export const state = {
     ) {
       history[opponentData.userName] += 1;
       history.lastWinner = opponentData.userName;
-      console.log(
-        "Le sume a " + opponentData.userName,
-        history[opponentData.userName]
-      );
     } else if (opponentMove == myMove) {
       history["draws"] += 1;
       history.lastWinner = "draw";
     }
-    console.log("pase de validar quien gano y ahora llamare a sethistory");
 
     await this.patchHistoryDb(history);
   },
@@ -364,10 +370,6 @@ export const state = {
       }
     }
     return false;
-  },
-
-  checkStatus() {
-    //Incorporar
   },
 
   setMove(moves) {

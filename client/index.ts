@@ -15,6 +15,8 @@ import "./pages/welcome";
 import "./pages/join-game";
 import "./pages/full-room";
 import "./pages/share-room";
+import "./pages/details";
+import "./pages/waiting-room";
 import "./pages/play";
 import "./pages/results";
 
@@ -39,14 +41,16 @@ import "./components/lose";
   }
 })();
 
-// AUTO-DELETE PLAYER WHEN RELOADING
+// AUTO-DELETE PLAYER AND ROOM WHEN RELOADING
 
 window.addEventListener("beforeunload", () => {
   const cs: State = state.getState();
 
-  console.log("entre a beforeunload");
+  const roomMembersLength = Object.keys(cs.rtDbData["currentGame"]).length;
 
-  if (cs.userData.shortRoomId && cs.userData.userId) {
+  if (roomMembersLength == 1) {
+    state.deleteRoom();
+  } else if (cs.userData.shortRoomId && cs.userData.userId) {
     state.deletePlayer();
   }
 });

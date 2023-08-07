@@ -17,6 +17,7 @@ customElements.define(
 
     addStyles() {
       const style = document.createElement("style");
+
       style.innerHTML = `
       .main {
           width: 100%;
@@ -130,11 +131,11 @@ customElements.define(
     setTimer() {
       setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
-        console.log("seteo el estado en false del player");
-
-        state.patchHistoryDb({ lastWinner: "", flagSetWinner: false });
-        Router.go("/share-room");
-        console.log("seteo el lastwinner en false");
+        state
+          .patchHistoryDb({ lastWinner: "", flagSetWinner: false })
+          .then(() => {
+            Router.go("/details");
+          });
       }, 3000);
     }
   }

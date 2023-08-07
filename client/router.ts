@@ -11,6 +11,8 @@ router.setRoutes([
   { path: "/join-game", component: "join-game" },
   { path: "/full-room", component: "full-room" },
   { path: "/share-room", component: "share-room" },
+  { path: "/details", component: "details-page" },
+  { path: "/waiting-room", component: "waiting-room" },
   { path: "/game", component: "init-game" },
   { path: "/results", component: "init-results" },
 ]);

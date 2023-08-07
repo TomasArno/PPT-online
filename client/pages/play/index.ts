@@ -25,7 +25,7 @@ customElements.define(
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
       }
       
       .timer-container {
@@ -35,6 +35,7 @@ customElements.define(
         height: 300px;
         margin: auto;
       }
+
       .timer {
         margin-top: 80px;
         font-family: American Typewriter;
@@ -78,22 +79,12 @@ customElements.define(
       }
 
       .warning-container {
-        margin: auto;
-        display: flex;
-        flex-direction: column;
-        row-gap: 50px;
-      }
-
-      @media (min-width: 767px) {
-        .warning-container {
-          row-gap: 80px;
-        }
+        width: 100%;
+        justifyt-text: center;
       }
 
       .warning {
         color: black;
-        width: 410px;
-
         font-family: American Typewriter;
         font-size: 30px;
         font-weight: 600;
@@ -122,9 +113,6 @@ customElements.define(
     setTimer() {
       setTimeout(() => {
         state.setPlayerStateDb({ start: false, choice: "" });
-
-        // state.patchHistoryDb({ lastWinner: "" });
-        Router.go("/share-room");
       }, 3000);
     }
 
@@ -145,6 +133,7 @@ customElements.define(
           </div>
         </main>
         `;
+
       this.addStyles();
 
       const imgContainer = this.shadow.querySelector(".my-images") as any;
@@ -192,12 +181,11 @@ customElements.define(
       });
 
       state.subscribe(() => {
-        const cs = state.getState();
+        const cs: State = state.getState();
 
-        const myChoice = state.getPlayersData(1).choice;
         const opponentChoice = state.getPlayersData(2).choice;
 
-        if (myChoice && opponentChoice && cs.rtDbData.history.lastWinner) {
+        if (cs.rtDbData["history"].lastWinner) {
           Router.go("/results");
         }
 
@@ -229,14 +217,10 @@ customElements.define(
       setTimeout(() => {
         const cs: State = state.getState();
 
-        const myChoice = state.getPlayersData(1).choice;
-        const opponentChoice = state.getPlayersData(2).choice;
-
         const flagSetWinner = cs.rtDbData["history"]["flagSetWinner"];
 
-        if (!flagSetWinner && myChoice && opponentChoice) {
+        if (!flagSetWinner) {
           state.patchHistoryDb({ flagSetWinner: true }).then(() => {
-            console.log("llame a set winner");
             state.setWinner();
           });
         }

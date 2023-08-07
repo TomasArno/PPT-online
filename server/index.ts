@@ -176,6 +176,42 @@ app.get("/rooms/:roomId", (req, res) => {
     });
 });
 
+app.delete("/rooms/:roomId", (req, res) => {
+  const { roomId } = req.params;
+  const { userId } = req.query;
+
+  usersColl
+    .doc(userId.toString())
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        roomsColl
+          .doc(roomId)
+          .get()
+          .then((snap) => {
+            if (snap.exists) {
+              const { rtDbRoomId } = snap.data();
+              const roomRef = rtDb.ref(`rooms/${rtDbRoomId}`);
+              roomRef
+                .remove()
+                .then(() => {
+                  res.json("Room successfully removed");
+                })
+                .catch(() => {
+                  res.json("Room remove failed.");
+                });
+            } else {
+              res.status(401).json({ err: "Entered room does not exist" });
+            }
+          });
+      } else {
+        res
+          .status(401)
+          .json({ err: "User ID does not exist, please authenticate" });
+      }
+    });
+});
+
 app.delete("/rooms/:roomId/users/:userId", (req, res) => {
   const { roomId } = req.params;
   const { userId } = req.params;

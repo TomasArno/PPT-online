@@ -25,7 +25,6 @@ export interface rtDbPlayerData {
 
 export interface State {
   userData: UserData;
-  rtDbData: {};
+  rtDbData: object;
   currentMoves: Game;
-  lastWinner: "";
 }
