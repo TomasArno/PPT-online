@@ -68,12 +68,12 @@ app.post("/history", (req, res) => {
                   res.json("history creation failed.");
                 });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {
         res
-          .status(401)
+          .status(404)
           .json({ err: "User ID does not exist, please authenticate" });
       }
     });
@@ -87,7 +87,7 @@ app.get("/users/login", (req, res) => {
     .get()
     .then((docsData) => {
       if (docsData.empty) {
-        res.status(400).json({ err: "Email not found" });
+        res.status(404).json({ err: "Email not found" });
       } else {
         const searchedDocId = docsData.docs[0].id;
         const searchedDoc = docsData.docs[0].data();
@@ -119,7 +119,7 @@ app.post("/rooms", (req, res) => {
               rtDbRoomId: roomLongId,
             })
             .then(() => {
-              res.json({ roomSimpleId });
+              res.status(201).json({ roomSimpleId });
             });
         });
       } else {
@@ -157,7 +157,7 @@ app.get("/rooms/:roomId", (req, res) => {
                     choice: "",
                     start: false,
                   });
-                  res.json({ rtDbRoomId });
+                  res.status(200).json({ rtDbRoomId });
                 } else {
                   res
                     .status(401)
@@ -165,7 +165,7 @@ app.get("/rooms/:roomId", (req, res) => {
                 }
               });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {
@@ -201,7 +201,7 @@ app.delete("/rooms/:roomId", (req, res) => {
                   res.json("Room remove failed.");
                 });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {
@@ -239,7 +239,7 @@ app.delete("/rooms/:roomId/users/:userId", (req, res) => {
                   res.json("Remove failed.");
                 });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {
@@ -277,7 +277,7 @@ app.patch("/rooms/:roomId/users/:userId", (req, res) => {
                   res.json("update failed.");
                 });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {
@@ -313,7 +313,7 @@ app.patch("/rooms/:roomId/history", (req, res) => {
                   res.json("update failed.");
                 });
             } else {
-              res.status(401).json({ err: "Entered room does not exist" });
+              res.status(404).json({ err: "Entered room does not exist" });
             }
           });
       } else {

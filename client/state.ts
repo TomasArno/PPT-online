@@ -91,10 +91,6 @@ export const state = {
 
     chatRoomsRef.on("value", (snapshot) => {
       let data = snapshot.val();
-      console.log("CAMBIOS", data);
-      // console.log("rtdb", lastState.rtDbData["currentGame"]);
-      // console.log("rtdb type ", typeof lastState.rtDbData["currentGame"]);
-
       lastState.rtDbData = data;
 
       this.setState(lastState);
@@ -134,7 +130,7 @@ export const state = {
       }
     );
 
-    if (userDataRes.status != 400) {
+    if (userDataRes.status != 404) {
       const userData = await userDataRes.json();
 
       const { userId } = userData;
@@ -168,6 +164,7 @@ export const state = {
 
     if (userIdDataRes.status != 400) {
       const { userId } = await userIdDataRes.json();
+
       cs.userData.userId = userId;
       this.setState(cs);
     } else {
@@ -189,7 +186,7 @@ export const state = {
       }),
     });
 
-    if (userRoomIdRes.status != 401) {
+    if (userRoomIdRes.status == 201) {
       const { roomSimpleId } = await userRoomIdRes.json();
 
       cs.userData.shortRoomId = roomSimpleId;
@@ -233,7 +230,8 @@ export const state = {
         },
       }
     );
-    if (userRoomIdRes.status != 401) {
+
+    if (userRoomIdRes.status == 200) {
       const { rtDbRoomId } = await userRoomIdRes.json();
 
       cs.userData.longRoomId = rtDbRoomId;
